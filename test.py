@@ -1,3 +1,4 @@
+import logging
 from stock_holding_algorithm.simple_algorithm import simple_algorithm
 from stock_db.db_connection import StockDbConnection
 
@@ -21,9 +22,13 @@ def test_db_connection():
     stock_db_connection.close()
 
 def test_reset_table():
+    logging.info("new StockDbConnection")
     stock_db_connection = StockDbConnection("example.db")
+    logging.info("reset table")
     stock_db_connection.reset_table()
+    logging.info("display table data")
     stock_db_connection.display_table_data()
+    logging.info("close connection")
     stock_db_connection.close()
 
 def test_insert_table_data():
@@ -41,8 +46,13 @@ def test_insert_table_data():
 
     stock_db_connection.display_table_data()
 
-test_db_connection()
-test_reset_table()
-test_insert_table_data()
-
+def main():
+    logging.basicConfig(filename="test.log", level=logging.DEBUG) 
+    logging.info("Started") 
+    test_db_connection()
+    test_reset_table()
+    test_insert_table_data()
+ 
+if __name__ == "__main__":
+    main()
 

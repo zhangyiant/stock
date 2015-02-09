@@ -1,7 +1,9 @@
+import logging
 import sqlite3
 
 class StockDbConnection:
     def __init__(self, filename):
+        self.logger = logging.getLogger(__name__ + ".StockDbConnection")
         self.filename = filename
         self.conn = None
 
@@ -35,13 +37,15 @@ class StockDbConnection:
             self.connect()
         conn = self.get_connection()
 
-        print("reset table")
+        # drop table
+        self.logger.info("drop table")
         cursor = self.get_cursor()
         cursor.execute("drop table if exists stock_cash")
         cursor.execute("drop table if exists stock_transaction")
         conn.commit()
 
         # create table
+        self.logger.info("create table")
         cursor.execute('''create table stock_cash (
                               symbol text primary key,
                               amount real)''')
