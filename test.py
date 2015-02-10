@@ -2,6 +2,8 @@ import logging
 import unittest
 from stock_holding_algorithm.simple_algorithm import simple_algorithm
 from stock_db.db_connection import StockDbConnection
+from stock_db.db_stock import StockCashTable
+from stock_db.db_stock import StockCash
 
 class StockDbConnectionTest(unittest.TestCase):
     def setUp(self):
@@ -68,6 +70,14 @@ class StockDbConnectionTest(unittest.TestCase):
         self.assertEqual(data, 
                          [(1, "601398", "buy", 200, 5.56, "2015-1-4"), 
                           (2, "601390", "sell", 1500, 8.12, "2015-5-6")])
+
+    def test_add_stock_cash(self):
+        stock_db_connection = StockDbConnection("example.db")
+        stock_db_connection.reset_table()
+        stock_cash_table = StockCashTable(stock_db_connection)
+        stock_cash = StockCash("601398", 1000)
+        stock_cash_table.add_stock_cash(stock_cash) 
+        stock_db_connection.display_table_data()
 
 def main():
     logging.basicConfig(filename="test.log", level=logging.DEBUG) 
