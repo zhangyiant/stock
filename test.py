@@ -9,7 +9,8 @@ class StockDbConnectionTest(unittest.TestCase):
 
     def test_simple_algorithm(self):
         a = simple_algorithm(3,4)
-        print(a.get_percentage(5))
+        percentage = a.get_percentage(5)
+        self.assertEqual(percentage, 100)
 
     def test_db_connection(self):
         stock_db_connection = StockDbConnection("example.db")
@@ -23,7 +24,7 @@ class StockDbConnectionTest(unittest.TestCase):
         cursor.execute("insert into test_db_connection values (?,?)", (2,50))
         conn.commit()
         cursor.execute("select * from test_db_connection")
-        print(cursor.fetchall()) 
+        self.assertEqual(cursor.fetchall(), [(2,50)]) 
         stock_db_connection.close()
 
     def test_reset_table(self):
@@ -31,8 +32,17 @@ class StockDbConnectionTest(unittest.TestCase):
         stock_db_connection = StockDbConnection("example.db")
         logging.info("reset table")
         stock_db_connection.reset_table()
-        logging.info("display table data")
-        stock_db_connection.display_table_data()
+        conn = stock_db_connection.get_connection()
+        cursor = stock_db_connection.get_cursor()
+        
+        cursor.execute("select * from stock_cash")
+        data = cursor.fetchall()
+        self.assertEqual(data, [])
+
+        cursor.execute("select * from stock_transaction")
+        data = cursor.fetchall()
+        self.assertEqual(data, [])
+        
         logging.info("close connection")
         stock_db_connection.close()
 
@@ -50,7 +60,14 @@ class StockDbConnectionTest(unittest.TestCase):
 
         conn.commit()
 
-        stock_db_connection.display_table_data()
+        cursor.execute("select * from stock_cash")
+        data = cursor.fetchall()
+        self.assertEqual(data, [('601398', 1500.001),('601390', 1234567890.789)])
+        cursor.execute("select * from stock_transaction")
+        data = cursor.fetchall()
+        self.assertEqual(data, 
+                         [(1, "601398", "buy", 200, 5.56, "2015-1-4"), 
+                          (2, "601390", "sell", 1500, 8.12, "2015-5-6")])
 
 def main():
     logging.basicConfig(filename="test.log", level=logging.DEBUG) 
