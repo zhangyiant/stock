@@ -71,13 +71,29 @@ class StockDbConnectionTest(unittest.TestCase):
                          [(1, "601398", "buy", 200, 5.56, "2015-1-4"), 
                           (2, "601390", "sell", 1500, 8.12, "2015-5-6")])
 
-    def test_add_stock_cash(self):
+    def test_stock_cash_sanity(self):
         stock_db_connection = StockDbConnection("example.db")
         stock_db_connection.reset_table()
         stock_cash_table = StockCashTable(stock_db_connection)
         stock_cash = StockCash("601398", 1000)
         stock_cash_table.add_stock_cash(stock_cash) 
-        stock_db_connection.display_table_data()
+        
+        # test the new created line
+        stock_cash = stock_cash_table.get_stock_cash_by_symbol("601398")
+        self.assertEqual(stock_cash.get_symbol(), "601398")
+        self.assertEqual(stock_cash.get_amount(), 1000)
+
+        # test update stock cash
+        stock_cash.set_amount(123456.566)
+        stock_cash_table.update_stock_cash(stock_cash)
+        stock_cash = stock_cash_table.get_stock_cash_by_symbol("601398")
+        self.assertEqual(stock_cash.get_amount(), 123456.566)
+ 
+        # test an unavailable line
+        stock_cash = stock_cash_table.get_stock_cash_by_symbol("601390")
+        self.assertEqual(stock_cash, None)
+
+        
 
 def main():
     logging.basicConfig(filename="test.log", level=logging.DEBUG) 
