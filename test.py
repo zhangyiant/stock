@@ -93,6 +93,25 @@ class StockDbConnectionTest(unittest.TestCase):
         stock_cash = stock_cash_table.get_stock_cash_by_symbol("601390")
         self.assertEqual(stock_cash, None)
 
+        # insert a new line, and test get_all function
+        stock_cash = StockCash("601390", 5000)
+        stock_cash_table.add_stock_cash(stock_cash)
+        stock_cash_list = stock_cash_table.get_all_stock_cash()
+        self.assertEqual(len(stock_cash_list), 2)
+        stock_cash = stock_cash_list[0]
+        self.assertEqual(stock_cash.get_symbol(), "601398")
+        self.assertEqual(stock_cash.get_amount(), 123456.566)
+        stock_cash = stock_cash_list[1]
+        self.assertEqual(stock_cash.get_symbol(), "601390")
+        self.assertEqual(stock_cash.get_amount(), 5000)
+
+        # delete a line
+        stock_cash = StockCash("601398", 0)
+        stock_cash_table.delete_stock_cash(stock_cash)
+        stock_cash = stock_cash_table.get_stock_cash_by_symbol("601398")
+        self.assertEqual(stock_cash, None)        
+ 
+
         
 
 def main():

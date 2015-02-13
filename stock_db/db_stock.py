@@ -38,6 +38,18 @@ class StockCashTable:
 
         return stock_cash 
 
+    def get_all_stock_cash(self):
+        conn = self.conn.connect()
+        cursor = self.conn.get_cursor()
+        cursor.execute("select * from stock_cash")
+        result = cursor.fetchall()
+        stock_cash_list = []
+        for elem in result:
+            symbol = elem[0]
+            amount = elem[1]
+            stock_cash = StockCash(symbol, amount)
+            stock_cash_list.append(stock_cash)
+        return stock_cash_list
 
     def get_stock_cash_by_symbol(self, symbol):
         conn = self.conn.connect()
@@ -63,5 +75,16 @@ class StockCashTable:
                        (amount, symbol))
         conn.commit()
         return
+
+    def delete_stock_cash(self, stock_cash):
+        conn = self.conn.connect()
+        cursor = self.conn.get_cursor()
+        symbol = stock_cash.get_symbol()
+        
+        cursor.execute("delete from stock_cash where symbol=?", (symbol,))
+
+        conn.commit()
+        return
+        
 
         
