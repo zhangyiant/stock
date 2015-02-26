@@ -8,6 +8,7 @@ class StockApp:
     def __init__(self):
         self.root = Tk()
         self.init_stock_cash_menu()
+        self.init_widget()
     
     def init_stock_cash_menu(self):
         self.menu_bar = Menu(self.root)
@@ -20,12 +21,21 @@ class StockApp:
         self.menu_bar.add_cascade(label="Cash", menu=self.cash_menu)
 
         self.other_menu.add_command(label="new quit!", command=self.root.quit)
+        self.other_menu.add_command(label="hello", command=self.hello)
         self.menu_bar.add_cascade(label="other", menu=self.other_menu)
 
         self.root["menu"] = self.menu_bar
 
+    def init_widget(self):
+        self.button = Button(self.root)
+        self.button["text"] = "hello world"
+        self.button.pack()
+
     def hello(self):
-        print("Hello!")
+        self.p = Toplevel()
+        self.p.transient(self.root)
+        self.p.grab_set()
+        print("hello")
 
     def mainloop(self):
         self.root.mainloop()
