@@ -30,6 +30,7 @@ class StockApp:
         self.button = Button(self.root)
         self.button["text"] = "hello world"
         self.button.pack()
+        self.button["command"] = self.hello2
 
     def hello(self):
         self.p = Toplevel()
@@ -37,6 +38,8 @@ class StockApp:
         self.p.grab_set()
         print("hello")
 
+    def hello2(self):
+        print("hello2")
     def mainloop(self):
         self.root.mainloop()
 
