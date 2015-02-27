@@ -29,6 +29,7 @@ class StockApp:
     def init_widget(self):
         self.button = Button(self.root)
         self.button["text"] = "hello world"
+        self.button["command"] = self.hello2
         self.button.pack()
 
     def hello(self):
@@ -37,6 +38,8 @@ class StockApp:
         self.p.grab_set()
         print("hello")
 
+    def hello2(self):
+        print("hello2")
     def mainloop(self):
         self.root.mainloop()
 
