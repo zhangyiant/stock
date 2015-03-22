@@ -8,30 +8,37 @@ class NewCashPoolFrame(Frame):
         self.init_widget()
 
     def init_widget(self):
-        self.columnconfigure(0, weight=3)
-        self.columnconfigure(1, weight=4)
-        self.columnconfigure(2, weight=5)
-        self.rowconfigure(0, weight=2)
-        self.rowconfigure(1, weight=3)
-        self.rowconfigure(2, weight=3)
-        self.button = Button(self)
-        self.button["text"] = "This is a test"
-        self.button["command"] = self.hello
-        self.button.grid(row=1, column=1)
+        self.lblSymbol = Label(self)
+        self.lblSymbol["text"] = "Symbol:"
+        self.lblSymbol.grid(row = 0, column = 0)
 
-        self.button2 = Button(self)
-        self.button2["text"] = "Button2"
-        self.button2.grid(row=0, column=0)
+        self.lblAmount = Label(self)
+        self.lblAmount["text"] = "Amount:"
+        self.lblAmount.grid(row = 1, column = 0)
 
-        self.button3 = Button(self)
-        self.button3["text"] = "Button3"
-        self.button3.grid(row=2, column=2)
+        self.entrySymbol = Entry(self)
+        self.entrySymbol.grid(row = 0, column = 1)
+
+        self.entryAmount = Entry(self)
+        self.entryAmount.grid(row = 1, column = 1)
+
+        self.btnAdd = Button(self)
+        self.btnAdd["text"] = "Add"
+        self.btnAdd.grid(row = 2, column = 0)
+
+        self.btnCancel = Button(self)
+        self.btnCancel["text"] = "Cancel"
+        self.btnCancel.grid(row = 2, column = 1)
+        self.btnCancel["command"] = self.hello
+        
+        return
 
     def get_result(self):
         return 1000
     
     def hello(self):
-        print("hello world in new frame")
+        print("hello world")
+        self.master.destroy()
         
         
 class NewCashPoolDialog():
