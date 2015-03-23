@@ -70,4 +70,11 @@ class StockDbConnection:
         cursor.execute("select * from stock_transaction")
         print(cursor.fetchall())
 
+DB_CONN = None
 
+def get_default_db_connection():
+    global DB_CONN
+    if (DB_CONN is None):
+        DB_CONN = StockDbConnection("stock.db")
+
+    return DB_CONN

@@ -1,6 +1,7 @@
 import logging
 from tkinter import *
 from stock_gui.new_cash_pool_dialog import NewCashPoolDialog
+from stock_gui.show_cash_pool_dialog import ShowCashPoolDialog
 
 def donothing():
     return
@@ -18,8 +19,12 @@ class StockApp:
 
         self.cash_menu.add_command(label="New cash pool...",
                                    command=self.new_cash_pool)
-        self.cash_menu.add_command(label="Delete cash pool...", command=donothing)
-        self.cash_menu.add_command(label="Update cash pool...", command=donothing)
+        self.cash_menu.add_command(label="Delete cash pool...",
+                                   command=donothing)
+        self.cash_menu.add_command(label="Update cash pool...",
+                                   command=donothing)
+        self.cash_menu.add_command(label="Show cash pool...",
+                                   command=self.show_cash_pool)
         self.menu_bar.add_cascade(label="Cash", menu=self.cash_menu)
 
         self.other_menu.add_command(label="new quit!", command=self.root.quit)
@@ -36,6 +41,11 @@ class StockApp:
 
     def new_cash_pool(self):
         dialog = NewCashPoolDialog()
+        result = dialog.open()
+        print(result)
+
+    def show_cash_pool(self):
+        dialog = ShowCashPoolDialog()
         result = dialog.open()
         print(result)
         

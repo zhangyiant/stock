@@ -1,5 +1,6 @@
 import logging
 from tkinter import *
+from stock_db.db_stock import StockCashTable, StockCash
 
 class NewCashPoolFrame(Frame):
     def __init__(self, master=None):
@@ -24,17 +25,36 @@ class NewCashPoolFrame(Frame):
 
         self.btnAdd = Button(self)
         self.btnAdd["text"] = "Add"
+        self.btnAdd["command"] = self.add_stock_cash
         self.btnAdd.grid(row = 2, column = 0)
 
         self.btnCancel = Button(self)
         self.btnCancel["text"] = "Cancel"
         self.btnCancel.grid(row = 2, column = 1)
         self.btnCancel["command"] = self.hello
+
+        self.lblStatus = Label(self)
+        self.lblStatus.grid(row = 3, column = 0, columnspan = 2, sticky = W)
+        self.set_status("")
         
         return
 
+    def set_status(self, status):
+        strStatus = "Status: {0}".format(status)
+        self.lblStatus["text"] = strStatus
+        return
+    
     def get_result(self):
         return 1000
+
+    def add_stock_cash(self):
+        stock_cash = StockCash()
+        stock_cash.set_symbol(self.entrySymbol.get())
+        stock_cash.set_amount(self.entryAmount.get())
+        stock_cash_table = StockCashTable()
+        stock_cash_table.add_stock_cash(stock_cash)
+        self.set_status("Added")
+        
     
     def hello(self):
         print("hello world")

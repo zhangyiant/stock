@@ -1,6 +1,6 @@
 import logging
 from stock_db.db_connection import StockDbConnection
-
+from stock_db.db_connection import get_default_db_connection
 class StockCash:
     def __init__(self, symbol=None, amount=None):
         self.symbol = symbol
@@ -21,7 +21,9 @@ class StockCash:
         return
    
 class StockCashTable:
-    def __init__(self, conn):
+    def __init__(self, conn = None):
+        if (conn is None):
+            conn = get_default_db_connection()
         self.logger = logging.getLogger(__name__ + ".StockCashTable")
         self.conn = conn
         return
