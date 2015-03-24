@@ -2,6 +2,7 @@ import logging
 from tkinter import *
 from stock_gui.new_cash_pool_dialog import NewCashPoolDialog
 from stock_gui.show_cash_pool_dialog import ShowCashPoolDialog
+from stock_gui.del_cash_pool_dialog import DelCashPoolDialog
 
 def donothing():
     return
@@ -20,7 +21,7 @@ class StockApp:
         self.cash_menu.add_command(label="New cash pool...",
                                    command=self.new_cash_pool)
         self.cash_menu.add_command(label="Delete cash pool...",
-                                   command=donothing)
+                                   command=self.del_cash_pool)
         self.cash_menu.add_command(label="Update cash pool...",
                                    command=donothing)
         self.cash_menu.add_command(label="Show cash pool...",
@@ -28,7 +29,6 @@ class StockApp:
         self.menu_bar.add_cascade(label="Cash", menu=self.cash_menu)
 
         self.other_menu.add_command(label="new quit!", command=self.root.quit)
-        self.other_menu.add_command(label="hello", command=self.hello)
         self.menu_bar.add_cascade(label="other", menu=self.other_menu)
 
         self.root["menu"] = self.menu_bar
@@ -37,26 +37,23 @@ class StockApp:
         self.button = Button(self.root)
         self.button["text"] = "hello world"
         self.button.pack()
-        self.button["command"] = self.hello2
-
+        return
+    
     def new_cash_pool(self):
         dialog = NewCashPoolDialog()
         result = dialog.open()
-        print(result)
+        return
+
+    def del_cash_pool(self):
+        dialog = DelCashPoolDialog()
+        result = dialog.open()
+        return
 
     def show_cash_pool(self):
         dialog = ShowCashPoolDialog()
         result = dialog.open()
-        print(result)
-        
-    def hello(self):
-        self.p = Toplevel()
-        self.p.transient(self.root)
-        self.p.grab_set()
-        print("hello")
+        return
 
-    def hello2(self):
-        print("hello2")
     def mainloop(self):
         self.root.mainloop()
 

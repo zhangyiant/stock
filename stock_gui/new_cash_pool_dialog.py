@@ -31,7 +31,7 @@ class NewCashPoolFrame(Frame):
         self.btnCancel = Button(self)
         self.btnCancel["text"] = "Cancel"
         self.btnCancel.grid(row = 2, column = 1)
-        self.btnCancel["command"] = self.hello
+        self.btnCancel["command"] = self.quit_dialog
 
         self.lblStatus = Label(self)
         self.lblStatus.grid(row = 3, column = 0, columnspan = 2, sticky = W)
@@ -56,8 +56,7 @@ class NewCashPoolFrame(Frame):
         self.set_status("Added")
         
     
-    def hello(self):
-        print("hello world")
+    def quit_dialog(self):
         self.master.destroy()
         
         
@@ -74,7 +73,6 @@ class NewCashPoolDialog():
         self.root.grab_set()
         self.root.wait_window(self.root)
         result = self.frame.get_result()
-        print("exit the window")
         return result
         
     

@@ -19,6 +19,10 @@ class StockCash:
     def set_amount(self, amount):
         self.amount = amount
         return
+
+    def __str__(self):
+        str = "Symbol:{0}\t Amount:{1}".format(self.symbol, self.amount)
+        return str
    
 class StockCashTable:
     def __init__(self, conn = None):
