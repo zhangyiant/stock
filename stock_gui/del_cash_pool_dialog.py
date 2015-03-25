@@ -9,9 +9,15 @@ class DelCashPoolFrame(Frame):
         self.init_widget()
 
     def init_widget(self):
+        
+        self.scrollbar = Scrollbar(self)
         self.lstboxStockCash = Listbox(self)
         self.lstboxStockCash.grid(row = 0, column = 0, columnspan = 2)
+        self.scrollbar.grid(row = 0, column = 3, sticky=NS)
+        self.lstboxStockCash["yscrollcommand"] = self.scrollbar.set
+        self.scrollbar["command"] = self.lstboxStockCash.yview
         self.refresh_list_box()
+
         
         self.btnDelete = Button(self)
         self.btnDelete["text"] = "Delete"
