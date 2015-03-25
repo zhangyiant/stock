@@ -1,6 +1,7 @@
 import logging
 from stock_db.db_connection import StockDbConnection
 from stock_db.db_connection import get_default_db_connection
+
 class StockCash:
     def __init__(self, symbol=None, amount=None):
         self.symbol = symbol
@@ -86,11 +87,8 @@ class StockCashTable:
         conn = self.conn.connect()
         cursor = self.conn.get_cursor()
         symbol = stock_cash.get_symbol()
-        
+
         cursor.execute("delete from stock_cash where symbol=?", (symbol,))
 
         conn.commit()
         return
-        
-
-        

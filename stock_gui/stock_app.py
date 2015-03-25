@@ -1,5 +1,6 @@
 import logging
 from tkinter import *
+from stock_db.db_connection import get_default_db_connection
 from stock_gui.new_cash_pool_dialog import NewCashPoolDialog
 from stock_gui.show_cash_pool_dialog import ShowCashPoolDialog
 from stock_gui.del_cash_pool_dialog import DelCashPoolDialog
@@ -29,6 +30,8 @@ class StockApp:
         self.menu_bar.add_cascade(label="Cash", menu=self.cash_menu)
 
         self.other_menu.add_command(label="new quit!", command=self.root.quit)
+        self.other_menu.add_command(label="Reset database",
+                                    command=self.reset_db)
         self.menu_bar.add_cascade(label="other", menu=self.other_menu)
 
         self.root["menu"] = self.menu_bar
@@ -54,7 +57,11 @@ class StockApp:
         result = dialog.open()
         return
 
+    def reset_db(self):
+        db_conn = get_default_db_connection()
+        db_conn.reset_table()
+        return
+
     def mainloop(self):
         self.root.mainloop()
-
-
+        return
