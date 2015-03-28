@@ -4,6 +4,8 @@ from stock_holding_algorithm.simple_algorithm import simple_algorithm
 from stock_db.db_connection import StockDbConnection
 from stock_db.db_stock import StockCashTable
 from stock_db.db_stock import StockCash
+from stock_db.db_stock import StockTransaction
+from stock_db.db_stock import StockTransactionTable
 
 class StockDbConnectionTest(unittest.TestCase):
     def setUp(self):
@@ -57,8 +59,8 @@ class StockDbConnectionTest(unittest.TestCase):
         cursor.execute("insert into stock_cash values (?,?)", ("601398", 1500.001))
         cursor.execute("insert into stock_cash values (?,?)", ("601390", 1234567890.789))
 
-        cursor.execute("insert into stock_transaction(symbol, trans, quantity, price, date) values(?,?,?,?,?)", ("601398", "buy", 200, 5.56, "2015-1-4"))
-        cursor.execute("insert into stock_transaction(symbol, trans, quantity, price, date) values(?,?,?,?,?)", ("601390", "sell", 1500, 8.12, "2015-5-6"))
+        cursor.execute("insert into stock_transaction(symbol, buy_or_sell, quantity, price, date) values(?,?,?,?,?)", ("601398", "buy", 200, 5.56, "2015-1-4"))
+        cursor.execute("insert into stock_transaction(symbol, buy_or_sell, quantity, price, date) values(?,?,?,?,?)", ("601390", "sell", 1500, 8.12, "2015-5-6"))
 
         conn.commit()
 
@@ -111,9 +113,51 @@ class StockDbConnectionTest(unittest.TestCase):
         stock_cash = stock_cash_table.get_stock_cash_by_symbol("601398")
         self.assertEqual(stock_cash, None)        
  
+    def test_stock_transaction_sanity(self):
+        stock_db_connection = StockDbConnection("example.db")
+        stock_db_connection.reset_table()
+        stock_transaction_table = StockTransactionTable(stock_db_connection)
+        stock_transaction = StockTransaction()
+        stock_transaction.set_symbol("601398")
+        stock_transaction.set_buy_or_sell("buy")
+        stock_transaction.set_quantity(100)
+        stock_transaction.set_price(4.51)
+        stock_transaction.set_date("2015-5-20")
+        stock_transaction_table.add_stock_transaction(stock_transaction) 
 
-        
+        stock_transaction.set_symbol("601855")
+        stock_transaction_table.add_stock_transaction(stock_transaction)
 
+        stock_transaction_list = \
+            stock_transaction_table.get_all_stock_transaction()
+        print("new table\n")
+        for stock_transaction in stock_transaction_list:
+            print("{0}".format(stock_transaction) + "\n")
+
+        stock_transaction = \
+            stock_transaction_table.get_stock_transaction_by_trans_id(1)
+        stock_transaction.set_symbol("xxxxxx")
+        stock_transaction_table.update_stock_transaction(stock_transaction)
+
+        print("new table\n")
+        stock_transaction_list = \
+            stock_transaction_table.get_all_stock_transaction()
+        for stock_transaction in stock_transaction_list:
+            print("{0}".format(stock_transaction) + "\n")
+
+        stock_transaction = \
+            stock_transaction_table.get_stock_transaction_by_trans_id(1)
+        stock_transaction_table.delete_stock_transaction(stock_transaction)
+
+        print("new table\n")
+        stock_transaction_list = \
+            stock_transaction_table.get_all_stock_transaction()
+        for stock_transaction in stock_transaction_list:
+            print("{0}".format(stock_transaction) + "\n")
+
+        return
+
+    
 def main():
     logging.basicConfig(filename="test.log", level=logging.DEBUG) 
     logging.info("Started") 

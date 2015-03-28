@@ -50,9 +50,9 @@ class StockDbConnection:
                               symbol text primary key,
                               amount real)''')
         cursor.execute('''create table stock_transaction(
-                              id integer primary key,
+                              trans_id integer primary key,
                               symbol text,
-                              trans  text,
+                              buy_or_sell  text,
                               quantity integer,
                               price real,
                               date text)''')
