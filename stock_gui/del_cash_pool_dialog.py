@@ -1,5 +1,6 @@
 import logging
 from tkinter import *
+from tkinter.ttk import *
 from stock_db.db_stock import StockCashTable, StockCash
 
 class DelCashPoolFrame(Frame):

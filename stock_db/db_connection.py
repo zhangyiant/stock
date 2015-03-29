@@ -11,8 +11,17 @@ class StockDbConnection:
         if self.is_connected():
             return self.conn
         self.conn = sqlite3.connect(self.filename)
+        self.turn_on_foreign_key()
         return self.conn
 
+    def turn_on_foreign_key(self):
+        cur = self.get_cursor()
+        cur.execute("PRAGMA foreign_keys = ON")
+        self.conn.commit()
+        cur.execute("PRAGMA foreign_keys")
+        print(cur.fetchone())
+        return
+    
     def close(self):
         if self.is_connected():
             self.conn.close()
@@ -40,22 +49,30 @@ class StockDbConnection:
         # drop table
         self.logger.info("drop table")
         cursor = self.get_cursor()
+        cursor.execute("drop table if exists stock_info")
         cursor.execute("drop table if exists stock_cash")
         cursor.execute("drop table if exists stock_transaction")
         conn.commit()
 
         # create table
         self.logger.info("create table")
+        cursor.execute('''create table stock_info (
+                              symbol text primary key,
+                              name text)''')
         cursor.execute('''create table stock_cash (
                               symbol text primary key,
-                              amount real)''')
+                              amount real,
+                              FOREIGN KEY(symbol) REFERENCES stock_info(symbol)
+                              )''')
         cursor.execute('''create table stock_transaction(
                               trans_id integer primary key,
                               symbol text,
                               buy_or_sell  text,
                               quantity integer,
                               price real,
-                              date text)''')
+                              date text,
+                              FOREIGN KEY(symbol) REFERENCES stock_info(symbol)
+                              )''')
         conn.commit()
  
     def display_table_data(self):
