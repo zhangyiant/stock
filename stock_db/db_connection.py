@@ -49,9 +49,9 @@ class StockDbConnection:
         # drop table
         self.logger.info("drop table")
         cursor = self.get_cursor()
-        cursor.execute("drop table if exists stock_info")
         cursor.execute("drop table if exists stock_cash")
         cursor.execute("drop table if exists stock_transaction")
+        cursor.execute("drop table if exists stock_info")
         conn.commit()
 
         # create table
