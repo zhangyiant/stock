@@ -21,7 +21,7 @@ class StockDbConnection:
         cur.execute("PRAGMA foreign_keys")
         print(cur.fetchone())
         return
-
+    
     def close(self):
         if self.is_connected():
             self.conn.close()
@@ -49,9 +49,9 @@ class StockDbConnection:
         # drop table
         self.logger.info("drop table")
         cursor = self.get_cursor()
+        cursor.execute("drop table if exists stock_info")
         cursor.execute("drop table if exists stock_cash")
         cursor.execute("drop table if exists stock_transaction")
-        cursor.execute("drop table if exists stock_info")
         conn.commit()
 
         # create table
@@ -74,29 +74,12 @@ class StockDbConnection:
                               FOREIGN KEY(symbol) REFERENCES stock_info(symbol)
                               )''')
         conn.commit()
-
-        self.import_stock_info()
-        return
-
-    def import_stock_info(self):
-        if not self.is_connected():
-            self.connect()
-        conn = self.get_connection()
-
-        cursor = self.get_cursor()
-        cursor.execute('''insert into stock_info (symbol, name)
-                              values(?,?)''',
-                       ("601398", "工商银行"))
-        cursor.execute('''insert into stock_info (symbol, name)
-                              values(?,?)''',
-                       ("601857", "中国石油"))
-        conn.commit()
-
+ 
     def display_table_data(self):
         conn = self.connect()
         cursor = self.get_cursor()
-
-        print("Cash Table:")
+       
+        print("Cash Table:") 
         cursor.execute("select * from stock_cash")
         print(cursor.fetchall())
 
