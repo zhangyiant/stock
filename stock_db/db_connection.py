@@ -4,7 +4,7 @@ import csv
 
 class StockDbConnection:
     def __init__(self, filename):
-        self.logger = logging.getLogger(__name__ + ".StockDbConnection")b
+        self.logger = logging.getLogger(__name__ + ".StockDbConnection")
         self.filename = filename
         self.conn = None
 

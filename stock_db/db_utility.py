@@ -12,7 +12,7 @@ def import_stock_info():
     cursor = db_connection.get_cursor()
 
     stock_info_table = StockInfoTable()
-    with open("stock_info.csv", newline="") as f:
+    with open("stock_info.csv", newline="", encoding="utf-8") as f:
         reader = csv.reader(f)
         for row in reader:
             stock_symbol = row[0]
