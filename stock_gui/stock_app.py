@@ -8,6 +8,8 @@ from stock_gui.del_cash_pool_dialog import DelCashPoolDialog
 from stock_gui.update_cash_pool_dialog import UpdateCashPoolDialog
 from stock_gui.show_transaction_dialog import ShowTransactionDialog
 from stock_gui.new_transaction_dialog import NewTransactionDialog
+from stock_gui.show_stock_info_dialog import ShowStockInfoDialog
+import stock_db.db_utility
 
 def donothing():
     return
@@ -19,7 +21,7 @@ class StockApp:
         self.root.minsize(400, 400)
         self.init_stock_cash_menu()
         self.init_widget()
-    
+
     def init_stock_cash_menu(self):
         self.menu_bar = Menu(self.root)
         self.cash_menu = Menu(self.menu_bar)
@@ -48,11 +50,13 @@ class StockApp:
                                           command=self.show_transaction)
         self.menu_bar.add_cascade(label="Transaction",
                                   menu=self.transaction_menu)
-        
+
         # other menu
         self.other_menu.add_command(label="new quit!", command=self.root.quit)
         self.other_menu.add_command(label="Reset database",
                                     command=self.reset_db)
+        self.other_menu.add_command(label="Show stock information",
+                                    command=self.show_stock_info)
         self.menu_bar.add_cascade(label="other", menu=self.other_menu)
 
         self.root["menu"] = self.menu_bar
@@ -62,7 +66,7 @@ class StockApp:
         self.button["text"] = "hello world"
         self.button.pack()
         return
-    
+
     def new_cash_pool(self):
         dialog = NewCashPoolDialog()
         result = dialog.open()
@@ -77,7 +81,7 @@ class StockApp:
         dialog = UpdateCashPoolDialog()
         result = dialog.open()
         return
-    
+
     def show_cash_pool(self):
         dialog = ShowCashPoolDialog()
         result = dialog.open()
@@ -98,10 +102,14 @@ class StockApp:
         dialog = ShowTransactionDialog()
         result = dialog.open()
         return
-    
+
+    def show_stock_info(self):
+        dialog = ShowStockInfoDialog()
+        result = dialog.open()
+        return
+
     def reset_db(self):
-        db_conn = get_default_db_connection()
-        db_conn.reset_table()
+        stock_db.db_utility.reset_table()
         return
 
     def mainloop(self):

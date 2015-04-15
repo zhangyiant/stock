@@ -2,6 +2,97 @@ import logging
 from stock_db.db_connection import StockDbConnection
 from stock_db.db_connection import get_default_db_connection
 
+class StockInfo:
+    def __init__(self, symbol = None, name = None):
+        self.symbol = symbol
+        self.name = name
+
+    def get_symbol(self):
+        return self.symbol
+
+    def set_symbol(self, symbol):
+        self.symbol = symbol
+        return
+
+    def get_name(self):
+        return self.name
+
+    def set_name(self, name):
+        self.name = name
+        return
+
+    def __str__(self):
+        result = "Symbol:{0}\t Name:{1}".format(self.symbol, self.name)
+        return result
+
+class StockInfoTable:
+    def __init__(self, conn = None):
+        if (conn is None):
+            conn = get_default_db_connection()
+        self.logger = logging.getLogger(__name__ + ".StockInfoTable")
+        self.conn = conn
+        return
+
+    def add_stock_info(self, stock_info):
+        conn = self.conn.connect()
+        cursor = self.conn.get_cursor()
+        symbol = stock_info.get_symbol()
+        name = stock_info.get_name()
+        cursor.execute("insert into stock_info values(?,?)",(symbol, name))
+        conn.commit()
+
+        stock_info = StockInfo(symbol, name)
+
+        return stock_info
+
+    def get_all_stock_info(self):
+        conn = self.conn.connect()
+        cursor = self.conn.get_cursor()
+        cursor.execute("select * from stock_info")
+        result = cursor.fetchall()
+        stock_info_list = []
+        for elem in result:
+            symbol = elem[0]
+            name = elem[1]
+            stock_info = StockInfo(symbol, name)
+            stock_info_list.append(stock_info)
+        return stock_info_list
+
+    def get_stock_info_by_symbol(self, symbol):
+        conn = self.conn.connect()
+        cursor = self.conn.get_cursor()
+        cursor.execute("select * from stock_info where symbol=?", (symbol,))
+        result = cursor.fetchone()
+        if result == None:
+            return None
+        symbol = result[0]
+        name = result[1]
+        stock_info = StockCash(symbol, name)
+        return stock_info
+
+    def update_stock_info(self, stock_info):
+        conn = self.conn.connect()
+        cursor = self.conn.get_cursor()
+        symbol = stock_info.get_symbol()
+        name = stock_info.get_name()
+
+        self.logger.debug("update stock_info, symbol=%s, name=%d",
+                          symbol, name)
+        cursor.execute("update stock_info set name=? where symbol=?",
+                       (name, symbol))
+        conn.commit()
+        return
+
+    def delete_stock_info(self, stock_info):
+        conn = self.conn.connect()
+        cursor = self.conn.get_cursor()
+        symbol = stock_cash.get_symbol()
+
+        cursor.execute("delete from stock_info where symbol=?", (symbol,))
+
+        conn.commit()
+        return
+
 class StockCash:
     def __init__(self, symbol=None, amount=None):
         self.symbol = symbol
@@ -24,7 +115,7 @@ class StockCash:
     def __str__(self):
         result = "Symbol:{0}\t Amount:{1}".format(self.symbol, self.amount)
         return result
-   
+
 class StockCashTable:
     def __init__(self, conn = None):
         if (conn is None):

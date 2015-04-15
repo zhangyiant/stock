@@ -49,5 +49,3 @@ class ShowCashPoolDialog():
         self.root.wait_window(self.root)
         result = self.frame.get_result()
         return result
-        
-    

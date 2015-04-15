@@ -1,5 +1,6 @@
 import logging
 import sqlite3
+import csv
 
 class StockDbConnection:
     def __init__(self, filename):
@@ -40,40 +41,6 @@ class StockDbConnection:
             return self.conn.cursor()
         else:
             return None
-
-    def reset_table(self):
-        if not self.is_connected():
-            self.connect()
-        conn = self.get_connection()
-
-        # drop table
-        self.logger.info("drop table")
-        cursor = self.get_cursor()
-        cursor.execute("drop table if exists stock_info")
-        cursor.execute("drop table if exists stock_cash")
-        cursor.execute("drop table if exists stock_transaction")
-        conn.commit()
-
-        # create table
-        self.logger.info("create table")
-        cursor.execute('''create table stock_info (
-                              symbol text primary key,
-                              name text)''')
-        cursor.execute('''create table stock_cash (
-                              symbol text primary key,
-                              amount real,
-                              FOREIGN KEY(symbol) REFERENCES stock_info(symbol)
-                              )''')
-        cursor.execute('''create table stock_transaction(
-                              trans_id integer primary key,
-                              symbol text,
-                              buy_or_sell  text,
-                              quantity integer,
-                              price real,
-                              date text,
-                              FOREIGN KEY(symbol) REFERENCES stock_info(symbol)
-                              )''')
-        conn.commit()
 
     def display_table_data(self):
         conn = self.connect()
