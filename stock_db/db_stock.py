@@ -76,7 +76,7 @@ class StockInfoTable:
         symbol = stock_info.get_symbol()
         name = stock_info.get_name()
 
-        self.logger.debug("update stock_info, symbol=%s, name=%d",
+        self.logger.debug("update stock_info, symbol=%s, name=%s",
                           symbol, name)
         cursor.execute("update stock_info set name=? where symbol=?",
                        (name, symbol))

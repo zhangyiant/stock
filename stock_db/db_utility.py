@@ -18,8 +18,15 @@ def import_stock_info():
             stock_symbol = row[0]
             stock_name = row[1]
             stock_info = \
-                StockInfo(stock_symbol, stock_name)
-            stock_info_table.add_stock_info(stock_info)
+                stock_info_table.get_stock_info_by_symbol(stock_symbol)
+            if stock_info != None:
+                stock_info = \
+                    StockInfo(stock_symbol, stock_name)
+                stock_info_table.update_stock_info(stock_info)
+            else:
+                stock_info = \
+                    StockInfo(stock_symbol, stock_name)
+                stock_info_table.add_stock_info(stock_info)
     return
 
 def reset_table():

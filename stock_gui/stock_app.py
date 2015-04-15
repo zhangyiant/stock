@@ -55,6 +55,8 @@ class StockApp:
         self.other_menu.add_command(label="new quit!", command=self.root.quit)
         self.other_menu.add_command(label="Reset database",
                                     command=self.reset_db)
+        self.other_menu.add_command(label = "Import stock information",
+                                    command = self.import_stock_info)
         self.other_menu.add_command(label="Show stock information",
                                     command=self.show_stock_info)
         self.menu_bar.add_cascade(label="other", menu=self.other_menu)
@@ -106,6 +108,10 @@ class StockApp:
     def show_stock_info(self):
         dialog = ShowStockInfoDialog()
         result = dialog.open()
+        return
+
+    def import_stock_info(self):
+        stock_db.db_utility.import_stock_info()
         return
 
     def reset_db(self):
