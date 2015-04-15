@@ -21,7 +21,7 @@ class StockDbConnection:
         cur.execute("PRAGMA foreign_keys")
         print(cur.fetchone())
         return
-    
+
     def close(self):
         if self.is_connected():
             self.conn.close()
@@ -74,12 +74,12 @@ class StockDbConnection:
                               FOREIGN KEY(symbol) REFERENCES stock_info(symbol)
                               )''')
         conn.commit()
- 
+
     def display_table_data(self):
         conn = self.connect()
         cursor = self.get_cursor()
-       
-        print("Cash Table:") 
+
+        print("Cash Table:")
         cursor.execute("select * from stock_cash")
         print(cursor.fetchall())
 
