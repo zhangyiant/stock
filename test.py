@@ -28,7 +28,7 @@ class StockDbConnectionTest(unittest.TestCase):
         cursor.execute("insert into test_db_connection values (?,?)", (2,50))
         conn.commit()
         cursor.execute("select * from test_db_connection")
-        self.assertEqual(cursor.fetchall(), [(2,50)]) 
+        self.assertEqual(cursor.fetchall(), [(2,50)])
         stock_db_connection.close()
 
     def test_reset_table(self):
@@ -38,7 +38,7 @@ class StockDbConnectionTest(unittest.TestCase):
         stock_db_connection.reset_table()
         conn = stock_db_connection.get_connection()
         cursor = stock_db_connection.get_cursor()
-        
+
         cursor.execute("select * from stock_cash")
         data = cursor.fetchall()
         self.assertEqual(data, [])
@@ -46,7 +46,7 @@ class StockDbConnectionTest(unittest.TestCase):
         cursor.execute("select * from stock_transaction")
         data = cursor.fetchall()
         self.assertEqual(data, [])
-        
+
         logging.info("close connection")
         stock_db_connection.close()
 
@@ -69,8 +69,8 @@ class StockDbConnectionTest(unittest.TestCase):
         self.assertEqual(data, [('601398', 1500.001),('601390', 1234567890.789)])
         cursor.execute("select * from stock_transaction")
         data = cursor.fetchall()
-        self.assertEqual(data, 
-                         [(1, "601398", "buy", 200, 5.56, "2015-1-4"), 
+        self.assertEqual(data,
+                         [(1, "601398", "buy", 200, 5.56, "2015-1-4"),
                           (2, "601390", "sell", 1500, 8.12, "2015-5-6")])
 
     def test_stock_cash_sanity(self):
@@ -78,8 +78,8 @@ class StockDbConnectionTest(unittest.TestCase):
         stock_db_connection.reset_table()
         stock_cash_table = StockCashTable(stock_db_connection)
         stock_cash = StockCash("601398", 1000)
-        stock_cash_table.add_stock_cash(stock_cash) 
-        
+        stock_cash_table.add_stock_cash(stock_cash)
+
         # test the new created line
         stock_cash = stock_cash_table.get_stock_cash_by_symbol("601398")
         self.assertEqual(stock_cash.get_symbol(), "601398")
@@ -90,7 +90,7 @@ class StockDbConnectionTest(unittest.TestCase):
         stock_cash_table.update_stock_cash(stock_cash)
         stock_cash = stock_cash_table.get_stock_cash_by_symbol("601398")
         self.assertEqual(stock_cash.get_amount(), 123456.566)
- 
+
         # test an unavailable line
         stock_cash = stock_cash_table.get_stock_cash_by_symbol("601390")
         self.assertEqual(stock_cash, None)
@@ -111,8 +111,8 @@ class StockDbConnectionTest(unittest.TestCase):
         stock_cash = StockCash("601398", 0)
         stock_cash_table.delete_stock_cash(stock_cash)
         stock_cash = stock_cash_table.get_stock_cash_by_symbol("601398")
-        self.assertEqual(stock_cash, None)        
- 
+        self.assertEqual(stock_cash, None)
+
     def test_stock_transaction_sanity(self):
         stock_db_connection = StockDbConnection("example.db")
         stock_db_connection.reset_table()
@@ -123,7 +123,7 @@ class StockDbConnectionTest(unittest.TestCase):
         stock_transaction.set_quantity(100)
         stock_transaction.set_price(4.51)
         stock_transaction.set_date("2015-5-20")
-        stock_transaction_table.add_stock_transaction(stock_transaction) 
+        stock_transaction_table.add_stock_transaction(stock_transaction)
 
         stock_transaction.set_symbol("601855")
         stock_transaction_table.add_stock_transaction(stock_transaction)
@@ -157,12 +157,10 @@ class StockDbConnectionTest(unittest.TestCase):
 
         return
 
-    
 def main():
-    logging.basicConfig(filename="test.log", level=logging.DEBUG) 
-    logging.info("Started") 
+    logging.basicConfig(filename="test.log", level=logging.DEBUG)
+    logging.info("Started")
     unittest.main()
- 
+
 if __name__ == "__main__":
     main()
-
