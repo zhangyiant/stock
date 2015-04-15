@@ -9,6 +9,8 @@ from stock_gui.update_cash_pool_dialog import UpdateCashPoolDialog
 from stock_gui.show_transaction_dialog import ShowTransactionDialog
 from stock_gui.new_transaction_dialog import NewTransactionDialog
 from stock_gui.show_stock_info_dialog import ShowStockInfoDialog
+from stock_gui.suggestion_dialog import SuggestionDialog
+
 import stock_db.db_utility
 
 def donothing():
@@ -53,6 +55,8 @@ class StockApp:
 
         # other menu
         self.other_menu.add_command(label="new quit!", command=self.root.quit)
+        self.other_menu.add_command(label="Get suggestion",
+                                    command=self.suggestion)
         self.other_menu.add_command(label="Reset database",
                                     command=self.reset_db)
         self.other_menu.add_command(label = "Import stock information",
@@ -107,6 +111,11 @@ class StockApp:
 
     def show_stock_info(self):
         dialog = ShowStockInfoDialog()
+        result = dialog.open()
+        return
+
+    def suggestion(self):
+        dialog = SuggestionDialog()
         result = dialog.open()
         return
 

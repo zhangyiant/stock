@@ -112,12 +112,11 @@ class NewTransactionFrame(Frame):
             symbol_list.append(stock_cash.get_symbol())
         self.cbbSymbol["values"] = symbol_list
         return
-            
-    
+
     def quit_dialog(self):
         self.master.destroy()
-        
-        
+        return
+
 class NewTransactionDialog():
     def __init__(self, master=None):
         self.master = master
