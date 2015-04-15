@@ -44,7 +44,7 @@ class NewTransactionFrame(Frame):
         self.lblDate.grid(row = 4, column = 0)
         self.entryDate = Entry(self)
         self.entryDate.grid(row = 4, column = 1)
-        
+
         self.btnAdd = Button(self)
         self.btnAdd["text"] = "Add"
         self.btnAdd["command"] = self.add_transaction

@@ -2,7 +2,7 @@ from stock_db.db_stock import StockCashTable, StockCash
 from stock_db.db_stock import StockTransactionTable, StockTransaction
 from stock_db.db_connection import get_default_db_connection
 
-class simple_algorithm:
+class SimpleAlgorithm:
     def __init__(self, symbol = None, start_price = None, stop_price = None,
                  current_price = None, conn = None):
         if conn == None:
@@ -57,7 +57,7 @@ class simple_algorithm:
         return
 
     def get_suggested_buy_or_sell(self):
-        return self.suggeted_buy_or_sell
+        return self.suggested_buy_or_sell
 
     def get_suggested_amount(self):
         return self.suggested_amount
