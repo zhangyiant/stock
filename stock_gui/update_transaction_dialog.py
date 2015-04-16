@@ -41,7 +41,14 @@ class UpdateTransactionFrame(Frame):
         if len(index) == 0:
             return
 
-        stock_transaction = self.lstboxStockTransaction.get(index[0])
+        list_box_string = self.lstboxStockTransaction.get(index[0])
+        list_box_string_list = list_box_string.split(",")
+        id_string = list_box_string_list[0]
+        trans_id = int(id_string[3:])
+
+        stock_transaction_table = StockTransactionTable()
+        stock_transaction = \
+            stock_transaction_table.get_stock_transaction_by_trans_id(trans_id)
 
         print(stock_transaction.get_buy_or_sell())
 
@@ -55,8 +62,12 @@ class UpdateTransactionFrame(Frame):
         stock_transaction_list = \
             stock_transaction_table.get_all_stock_transaction()
         for stock_transaction in stock_transaction_list:
+            list_box_string = "ID:{0},Symbol:{1},Buy_or_Sell:{2}".format(
+                stock_transaction.get_trans_id(),
+                stock_transaction.get_symbol(),
+                stock_transaction.get_buy_or_sell())
             self.lstboxStockTransaction.insert(END, \
-                stock_transaction)
+                                               list_box_string)
         return
 
     def quit_dialog(self):

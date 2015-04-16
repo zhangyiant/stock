@@ -94,9 +94,9 @@ class SimpleAlgorithm:
         quantity = 0
         for stock_transaction in stock_transaction_list:
             buy_or_sell = stock_transaction.get_buy_or_sell()
-            if (buy_or_sell == "buy"):
+            if (buy_or_sell == "Buy"):
                 quantity = quantity + stock_transaction.get_quantity()
-            elif (buy_or_sell == "sell"):
+            elif (buy_or_sell == "Sell"):
                 quantity = quantity - stock_transaction.get_quantity()
             else:
                 # Need to raise an error
@@ -110,7 +110,7 @@ class SimpleAlgorithm:
     def get_current_percentage(self):
         current_cash = self.get_cash_value()
         stock_value = self.get_stock_value()
-        current_percentage = stock_value / (current_cash + stock_value)
+        current_percentage = stock_value / (current_cash + stock_value) * 100
         return current_percentage
 
     def calculate(self):
