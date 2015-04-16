@@ -18,17 +18,44 @@ class UpdateTransactionFrame(Frame):
         self.scrollbar["command"] = self.lstboxStockTransaction.yview
         self.refresh_list_box()
 
-        self.entryAmount = Entry(self)
-        self.entryAmount.grid(row = 1, column = 0, columnspan = 2)
+        self.lblSymbol = Label(self)
+        self.lblSymbol["text"] = "Symbols:"
+        self.lblSymbol.grid(row = 1, column = 0)
+        self.entrySymbol = Entry(self)
+        self.entrySymbol.grid(row = 1, column = 1)
+
+        self.lblBuyOrSell = Label(self)
+        self.lblBuyOrSell["text"] = "Buy/Sell:"
+        self.lblBuyOrSell.grid(row = 2, column = 0)
+        self.entryBuyOrSell = Entry(self)
+        self.entryBuyOrSell.grid(row = 2, column = 1)
+
+        self.lblQuantity = Label(self)
+        self.lblQuantity["text"] = "Quantity:"
+        self.lblQuantity.grid(row = 3, column = 0)
+        self.entryQuantity = Entry(self)
+        self.entryQuantity.grid(row = 3, column = 1)
+
+        self.lblPrice = Label(self)
+        self.lblPrice["text"] = "Price:"
+        self.lblPrice.grid(row = 4, column = 0)
+        self.entryPrice = Entry(self)
+        self.entryPrice.grid(row = 4, column = 1)
+
+        self.lblDate = Label(self)
+        self.lblDate["text"] = "Date:"
+        self.lblDate.grid(row = 5, column = 0)
+        self.entryDate = Entry(self)
+        self.entryDate.grid(row = 5, column = 1)
 
         self.btnUpdate = Button(self)
         self.btnUpdate["text"] = "Update"
-        self.btnUpdate.grid(row = 2, column = 0)
+        self.btnUpdate.grid(row = 6, column = 0)
         self.btnUpdate["command"] = self.update_stock_transaction
 
         self.btnCancel = Button(self)
         self.btnCancel["text"] = "Cancel"
-        self.btnCancel.grid(row = 2, column = 1)
+        self.btnCancel.grid(row = 6, column = 1)
         self.btnCancel["command"] = self.quit_dialog
 
         return
