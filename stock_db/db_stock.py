@@ -200,7 +200,7 @@ class StockTransaction:
     def set_trans_id(self, trans_id):
         self.trans_id = trans_id
         return
-    
+
     def get_symbol(self):
         return self.symbol
 
@@ -313,6 +313,30 @@ class StockTransactionTable:
         stock_transaction.set_date(result[5])
         return stock_transaction
 
+    def get_stock_transaction_list_by_symbol(self, symbol):
+        conn = self.conn.connect()
+        cursor = self.conn.get_cursor()
+        cursor.execute("select * from stock_transaction where symbol=?", \
+                       (symbol,))
+        result = cursor.fetchall()
+        stock_transaction_list = []
+        for elem in result:
+            trans_id = elem[0]
+            symbol = elem[1]
+            buy_or_sell = elem[2]
+            quantity = elem[3]
+            price = elem[4]
+            date = elem[5]
+            stock_transaction = StockTransaction()
+            stock_transaction.set_trans_id(trans_id)
+            stock_transaction.set_symbol(symbol)
+            stock_transaction.set_buy_or_sell(buy_or_sell)
+            stock_transaction.set_quantity(quantity)
+            stock_transaction.set_price(price)
+            stock_transaction.set_date(date)
+            stock_transaction_list.append(stock_transaction)
+        return stock_transaction_list
+
     def update_stock_transaction(self, stock_transaction):
         conn = self.conn.connect()
         cursor = self.conn.get_cursor()
@@ -323,14 +347,14 @@ class StockTransactionTable:
         price = stock_transaction.get_price()
         date = stock_transaction.get_date()
 
-        self.logger.debug("update stock_transaction, symbol=%s, price=%d", 
+        self.logger.debug("update stock_transaction, symbol=%s, price=%d",
                           symbol, price)
-        cursor.execute('''update stock_transaction set symbol=?, 
+        cursor.execute('''update stock_transaction set symbol=?,
                                                        buy_or_sell=?,
                                                        quantity=?,
                                                        price=?,
-                                                       date=? 
-                                                   where trans_id=?''', 
+                                                       date=?
+                                                   where trans_id=?''',
                        (symbol, buy_or_sell, quantity, price, date, trans_id))
         conn.commit()
         return

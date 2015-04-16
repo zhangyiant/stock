@@ -51,7 +51,73 @@ class SimpleAlgorithm:
         self.conn = conn
         return
 
+    def get_expected_percentage(self):
+        current_price_percentage = (self.current_price - self.start_price) / \
+                                   (self.stop_price - self.start_price)
+        if (current_price_percentage >= 0 ) and \
+           (current_price_percentage < 0.25):
+            expected_percentage = \
+                ((0.25 - current_price_percentage) / 0.25 * 0.5 + 0.5) * 100
+        elif (current_price_percentage >= 0.25) and \
+             (current_price_percentage < 0.5):
+            expected_percentage = \
+                ((0.5 - current_price_percentage) / 0.25 * 0.25 + 0.25) * 100
+        elif (current_price_percentage >= 0.5) and \
+            (current_price_percentage < 0.75):
+            expected_percentage = \
+                ((0.75 - current_price_percentage) / 0.25 * 0.125 + 0.125) * 100
+        elif (current_price_percentage >= 0.75) and \
+            (current_price_percentage <= 1):
+            expected_percentage = \
+                ((1 - current_price_percentage) / 0.25 * 0.125) * 100
+        else:
+            expected_percentage = None
+        return expected_percentage
+
+    def get_total_value(self):
+        current_cash = self.get_cash_value()
+        stock_value = self.get_stock_value()
+        total = current_cash + stock_value
+        return total
+
+    def get_cash_value(self):
+        stock_cash_table = StockCashTable(self.conn)
+        stock_cash = stock_cash_table.get_stock_cash_by_symbol(self.symbol)
+        amount = stock_cash.get_amount()
+        return amount
+
+    def get_stock_quantity(self):
+        stock_transaction_table = StockTransactionTable(self.conn)
+        stock_transaction_list = \
+            stock_transaction_table.get_stock_transaction_list_by_symbol(\
+                self.symbol)
+        quantity = 0
+        for stock_transaction in stock_transaction_list:
+            buy_or_sell = stock_transaction.get_buy_or_sell()
+            if (buy_or_sell == "buy"):
+                quantity = quantity + stock_transaction.get_quantity()
+            elif (buy_or_sell == "sell"):
+                quantity = quantity - stock_transaction.get_quantity()
+            else:
+                # Need to raise an error
+                return None
+        return quantity
+
+    def get_stock_value(self):
+        stock_value = self.get_stock_quantity() * self.current_price
+        return stock_value
+
+    def get_current_percentage(self):
+        current_cash = self.get_cash_value()
+        stock_value = self.get_stock_value()
+        current_percentage = stock_value / (current_cash + stock_value)
+        return current_percentage
+
     def calculate(self):
+        expected_percentage = self.get_expected_percentage()
+        current_percentage = self.get_current_percentage()
+        print(expected_percentage)
+        print(current_percentage)
         self.suggested_buy_or_sell = "buy"
         self.suggested_amount = 100
         return
