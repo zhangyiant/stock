@@ -11,11 +11,10 @@ class NewTransactionFrame(Frame):
         self.init_widget()
 
     def init_widget(self):
-
         self.lblSymbol = Label(self)
         self.lblSymbol["text"] = "Symbol:"
         self.lblSymbol.grid(row = 0, column = 0)
-        
+
         self.cbbSymbol = Combobox(self)
         self.fill_symbol_combobox()
         self.cbbSymbol.grid(row = 0, column = 1)
