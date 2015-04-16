@@ -9,6 +9,7 @@ from stock_gui.update_cash_pool_dialog import UpdateCashPoolDialog
 from stock_gui.show_transaction_dialog import ShowTransactionDialog
 from stock_gui.new_transaction_dialog import NewTransactionDialog
 from stock_gui.update_transaction_dialog import UpdateTransactionDialog
+from stock_gui.del_transaction_dialog import DelTransactionDialog
 from stock_gui.show_stock_info_dialog import ShowStockInfoDialog
 from stock_gui.suggestion_dialog import SuggestionDialog
 
@@ -100,6 +101,8 @@ class StockApp:
         return
 
     def delete_transaction(self):
+        dialog = DelTransactionDialog()
+        result = dialog.open()
         return
 
     def update_transaction(self):
