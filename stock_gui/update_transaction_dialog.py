@@ -20,6 +20,12 @@ class UpdateTransactionFrame(Frame):
                                          self.listbox_select)
         self.refresh_list_box()
 
+        self.lblTransId = Label(self)
+        self.lblTransId["text"] = "Transaction ID:"
+        self.lblTransId.grid(row = 1, column = 0)
+        self.entryTransId = Entry(self)
+        self.entryTransId.grid(row = 1, column = 1)
+
         self.lblSymbol = Label(self)
         self.lblSymbol["text"] = "Symbols:"
         self.lblSymbol.grid(row = 1, column = 0)
@@ -66,23 +72,16 @@ class UpdateTransactionFrame(Frame):
         return 1000
 
     def update_stock_transaction(self):
-        index = self.lstboxStockTransaction.curselection()
-        if len(index) == 0:
-            return
-
-        list_box_string = self.lstboxStockTransaction.get(index[0])
-        list_box_string_list = list_box_string.split(",")
-        id_string = list_box_string_list[0]
-        trans_id = int(id_string[3:])
+        trans_id = int(self.entryTransId.get())
 
         stock_transaction_table = StockTransactionTable()
         stock_transaction = \
             stock_transaction_table.get_stock_transaction_by_trans_id(trans_id)
 
-        symobl = self.entrySymbol.get()
+        symbol = self.entrySymbol.get()
         buy_or_sell = self.entryBuyOrSell.get()
-        quantity = self.entryQuantity.get()
-        price = self.entryPrice.get()
+        quantity = int(self.entryQuantity.get())
+        price = float(self.entryPrice.get())
         date = self.entryDate.get()
 
         stock_transaction.set_symbol(symbol)
@@ -124,6 +123,9 @@ class UpdateTransactionFrame(Frame):
         stock_transaction_table = StockTransactionTable()
         stock_transaction = \
             stock_transaction_table.get_stock_transaction_by_trans_id(trans_id)
+
+        self.entryTransId.delete(0, END)
+        self.entryTransId.insert(END, stock_transaction.get_trans_id())
 
         self.entrySymbol.delete(0, END)
         self.entrySymbol.insert(END, stock_transaction.get_symbol())
