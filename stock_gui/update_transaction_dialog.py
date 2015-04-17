@@ -16,6 +16,8 @@ class UpdateTransactionFrame(Frame):
         self.scrollbar.grid(row = 0, column = 3, sticky=NS)
         self.lstboxStockTransaction["yscrollcommand"] = self.scrollbar.set
         self.scrollbar["command"] = self.lstboxStockTransaction.yview
+        self.lstboxStockTransaction.bind("<<ListboxSelect>>", \
+                                         self.listbox_select)
         self.refresh_list_box()
 
         self.lblSymbol = Label(self)
@@ -106,6 +108,38 @@ class UpdateTransactionFrame(Frame):
                 stock_transaction.get_buy_or_sell())
             self.lstboxStockTransaction.insert(END, \
                                                list_box_string)
+        return
+
+    def listbox_select(self, event):
+        w = event.widget
+        index = w.curselection()
+        if len(index) == 0:
+            return
+
+        list_box_string = w.get(index[0])
+        list_box_string_list = list_box_string.split(",")
+        id_string = list_box_string_list[0]
+        trans_id = int(id_string[3:])
+
+        stock_transaction_table = StockTransactionTable()
+        stock_transaction = \
+            stock_transaction_table.get_stock_transaction_by_trans_id(trans_id)
+
+        self.entrySymbol.delete(0, END)
+        self.entrySymbol.insert(END, stock_transaction.get_symbol())
+
+        self.entryBuyOrSell.delete(0, END)
+        self.entryBuyOrSell.insert(END, stock_transaction.get_buy_or_sell())
+
+        self.entryQuantity.delete(0, END)
+        self.entryQuantity.insert(END, stock_transaction.get_quantity())
+
+        self.entryPrice.delete(0, END)
+        self.entryPrice.insert(END, stock_transaction.get_price())
+
+        self.entryDate.delete(0, END)
+        self.entryDate.insert(END, stock_transaction.get_date())
+
         return
 
     def quit_dialog(self):
