@@ -77,7 +77,18 @@ class UpdateTransactionFrame(Frame):
         stock_transaction = \
             stock_transaction_table.get_stock_transaction_by_trans_id(trans_id)
 
-        print(stock_transaction.get_buy_or_sell())
+        symobl = self.entrySymbol.get()
+        buy_or_sell = self.entryBuyOrSell.get()
+        quantity = self.entryQuantity.get()
+        price = self.entryPrice.get()
+        date = self.entryDate.get()
+
+        stock_transaction.set_symbol(symbol)
+        stock_transaction.set_buy_or_sell(buy_or_sell)
+        stock_transaction.set_quantity(quantity)
+        stock_transaction.set_price(price)
+
+        stock_transaction_table.update_stock_transaction(stock_transaction)
 
         self.refresh_list_box()
 
