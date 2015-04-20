@@ -32,6 +32,7 @@ class StockDbConnectionTest(unittest.TestCase):
         stock_db_connection.close()
 
     def test_reset_table(self):
+        # test
         logging.info("new StockDbConnection")
         stock_db_connection = StockDbConnection("example.db")
         logging.info("reset table")
