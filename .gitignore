@@ -6,5 +6,6 @@ tags
 *~
 \#*#
 stock_db/.#db_connection.py
-
 stock_db/.#db_stock.py
+.project
+.pydevproject
