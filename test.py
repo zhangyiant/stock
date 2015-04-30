@@ -1,6 +1,6 @@
 import logging
 import unittest
-from stock_holding_algorithm.simple_algorithm import simple_algorithm
+from stock_holding_algorithm.simple_algorithm import SimpleAlgorithm
 from stock_db.db_connection import StockDbConnection
 from stock_db.db_stock import StockCashTable
 from stock_db.db_stock import StockCash
@@ -12,7 +12,7 @@ class StockDbConnectionTest(unittest.TestCase):
         return
 
     def test_simple_algorithm(self):
-        a = simple_algorithm(3,4)
+        a = SimpleAlgorithm(3,4)
         percentage = a.get_percentage(5)
         self.assertEqual(percentage, 100)
 
