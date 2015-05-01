@@ -1,8 +1,20 @@
 import logging
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy import Column, Integer, String
+from sqlalchemy.orm import make_transient
+
 from stock_db.db_connection import StockDbConnection
 from stock_db.db_connection import get_default_db_connection
 
-class StockInfo:
+Base = declarative_base()
+
+class StockInfo(Base):
+    
+    __tablename__ = 'stock_info'
+    
+    symbol = Column(String(20), primary_key=True)
+    name = Column(String(20))
+    
     def __init__(self, symbol = None, name = None):
         self.symbol = symbol
         self.name = name
@@ -34,15 +46,20 @@ class StockInfoTable:
         return
 
     def add_stock_info(self, stock_info):
-        conn = self.conn.connect()
-        cursor = self.conn.get_cursor()
-        symbol = stock_info.get_symbol()
-        name = stock_info.get_name()
-        cursor.execute("insert into stock_info values(?,?)",(symbol, name))
-        conn.commit()
-
-        stock_info = StockInfo(symbol, name)
-
+        
+        Session = self.conn.get_sessionmake()
+        session = Session()
+        
+        session.add(stock_info)
+        
+        session.commit()
+        
+        session.refresh(stock_info)
+        
+        make_transient(stock_info)
+        
+        session.close()
+        
         return stock_info
 
     def get_all_stock_info(self):
@@ -59,15 +76,12 @@ class StockInfoTable:
         return stock_info_list
 
     def get_stock_info_by_symbol(self, symbol):
-        conn = self.conn.connect()
-        cursor = self.conn.get_cursor()
-        cursor.execute("select * from stock_info where symbol=?", (symbol,))
-        result = cursor.fetchone()
-        if result == None:
-            return None
-        symbol = result[0]
-        name = result[1]
-        stock_info = StockCash(symbol, name)
+        Session = self.conn.get_sessionmake()
+        session = Session()
+        stock_info = session.query(StockInfo).filter(StockInfo.symbol==symbol).scalar()
+        if stock_info is not None:
+            make_transient(stock_info)
+        session.close()
         return stock_info
 
     def update_stock_info(self, stock_info):
@@ -86,7 +100,7 @@ class StockInfoTable:
     def delete_stock_info(self, stock_info):
         conn = self.conn.connect()
         cursor = self.conn.get_cursor()
-        symbol = stock_cash.get_symbol()
+        symbol = stock_info.get_symbol()
 
         cursor.execute("delete from stock_info where symbol=?", (symbol,))
 

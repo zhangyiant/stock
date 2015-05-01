@@ -1,17 +1,17 @@
 import logging
 import csv
+
 from stock_db.db_connection import StockDbConnection
 from stock_db.db_connection import get_default_db_connection
 from stock_db.db_stock import StockInfoTable, StockInfo
+import stock_db.db_stock
 
 logger = logging.getLogger(__name__ + ".StockDbUtility")
 
 def import_stock_info():
-    db_connection = get_default_db_connection()
-    conn = db_connection.connect()
-    cursor = db_connection.get_cursor()
 
     stock_info_table = StockInfoTable()
+    
     with open("stock_info.csv", newline="", encoding="utf-8") as f:
         reader = csv.reader(f)
         for row in reader:
@@ -31,38 +31,32 @@ def import_stock_info():
 
 def reset_table():
     db_connection = get_default_db_connection()
-    conn = db_connection.connect()
-
-    # drop table
-    logger.info("drop table")
-    cursor = db_connection.get_cursor()
-    cursor.execute("drop table if exists stock_info")
-    cursor.execute("drop table if exists stock_cash")
-    cursor.execute("drop table if exists stock_transaction")
-    conn.commit()
-
-    # create table
-    logger.info("create table")
-    cursor.execute('''create table stock_info (
-                          symbol text primary key,
-                          name text)''')
-    cursor.execute('''create table stock_cash (
-                          symbol text primary key,
-                          amount real,
-                          FOREIGN KEY(symbol) REFERENCES stock_info(symbol)
-                          )''')
-    cursor.execute('''create table stock_transaction(
-                          trans_id integer primary key,
-                          symbol text,
-                          buy_or_sell  text,
-                          quantity integer,
-                          price real,
-                          date text,
-                          FOREIGN KEY(symbol) REFERENCES stock_info(symbol)
-                          )''')
-    conn.commit()
+    
+    Base = stock_db.db_stock.Base
+  
+    engine = db_connection.get_engine()
+    
+    Base.metadata.drop_all(engine)
+    Base.metadata.create_all(engine)
 
     # import stock info from csv file
     import_stock_info()
 
     return
+
+if __name__ == "__main__":
+    reset_table()
+
+    db_connection = get_default_db_connection()
+    
+    Session = db_connection.get_sessionmake()
+    
+    session = Session()
+    
+    stock_info_list = session.query(StockInfo).all()
+    
+    for stock_info in stock_info_list:
+        print(stock_info)
+    
+    session.close()
+    
