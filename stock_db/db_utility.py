@@ -8,10 +8,13 @@ import stock_db.db_stock
 
 logger = logging.getLogger(__name__ + ".StockDbUtility")
 
-def import_stock_info():
+def import_stock_info(conn = None):
 
-    stock_info_table = StockInfoTable()
-    
+    if conn is None:
+        stock_info_table = StockInfoTable()
+    else:
+        stock_info_table = StockInfoTable(conn)
+        
     with open("stock_info.csv", newline="", encoding="utf-8") as f:
         reader = csv.reader(f)
         for row in reader:
@@ -29,9 +32,13 @@ def import_stock_info():
                 stock_info_table.add_stock_info(stock_info)
     return
 
-def reset_table():
-    db_connection = get_default_db_connection()
+def reset_table(conn = None):
     
+    if conn is None:
+        db_connection = get_default_db_connection()
+    else:
+        db_connection = conn
+        
     Base = stock_db.db_stock.Base
   
     engine = db_connection.get_engine()

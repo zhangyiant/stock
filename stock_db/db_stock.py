@@ -1,10 +1,14 @@
 import logging
+
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy import Column, Integer, String
+from sqlalchemy import ForeignKey
+from sqlalchemy import Column, Integer, String, Float, Date
 from sqlalchemy.orm import make_transient
+from sqlalchemy.orm import relationship
 
 from stock_db.db_connection import StockDbConnection
 from stock_db.db_connection import get_default_db_connection
+from sqlalchemy.orm.session import make_transient
 
 Base = declarative_base()
 
@@ -14,6 +18,9 @@ class StockInfo(Base):
     
     symbol = Column(String(20), primary_key=True)
     name = Column(String(20))
+    
+    stock_cash = relationship("StockCash", uselist = False, backref="stock_info")
+    stock_transactions = relationship("StockTransaction", order_by="StockTransaction.trans_id", backref="stock_info")
     
     def __init__(self, symbol = None, name = None):
         self.symbol = symbol
@@ -63,17 +70,18 @@ class StockInfoTable:
         return stock_info
 
     def get_all_stock_info(self):
-        conn = self.conn.connect()
-        cursor = self.conn.get_cursor()
-        cursor.execute("select * from stock_info")
-        result = cursor.fetchall()
-        stock_info_list = []
-        for elem in result:
-            symbol = elem[0]
-            name = elem[1]
-            stock_info = StockInfo(symbol, name)
-            stock_info_list.append(stock_info)
-        return stock_info_list
+        
+        Session = self.conn.get_sessionmake()
+        session = Session()
+        
+        stock_info_list = session.query(StockInfo).all()
+        
+        new_stock_info_list = []
+        for stock_info in stock_info_list:
+            make_transient(stock_info)
+            new_stock_info_list.append(stock_info)
+        session.close()
+        return new_stock_info_list
 
     def get_stock_info_by_symbol(self, symbol):
         Session = self.conn.get_sessionmake()
@@ -85,29 +93,46 @@ class StockInfoTable:
         return stock_info
 
     def update_stock_info(self, stock_info):
-        conn = self.conn.connect()
-        cursor = self.conn.get_cursor()
-        symbol = stock_info.get_symbol()
-        name = stock_info.get_name()
-
-        self.logger.debug("update stock_info, symbol=%s, name=%s",
-                          symbol, name)
-        cursor.execute("update stock_info set name=? where symbol=?",
-                       (name, symbol))
-        conn.commit()
-        return
+        
+        Session = self.conn.get_sessionmake()
+        
+        session = Session()
+        
+        new_stock_info = session.merge(stock_info)
+        
+        session.commit()
+        
+        session.refresh(new_stock_info)
+        
+        make_transient(new_stock_info)
+        
+        session.close()
+        
+        return new_stock_info
 
     def delete_stock_info(self, stock_info):
-        conn = self.conn.connect()
-        cursor = self.conn.get_cursor()
-        symbol = stock_info.get_symbol()
-
-        cursor.execute("delete from stock_info where symbol=?", (symbol,))
-
-        conn.commit()
+        
+        Session = self.conn.get_sessionmake()
+        session = Session()
+        
+        new_stock_info = session.merge(stock_info)
+        
+        session.delete(new_stock_info)
+        
+        session.commit()
+        
+        session.close()
+        
         return
 
-class StockCash:
+
+class StockCash(Base):
+    
+    __tablename__ = "stock_cash"
+    
+    symbol = Column(String(20), ForeignKey("stock_info.symbol"),  primary_key=True)
+    amount = Column(Float)
+    
     def __init__(self, symbol=None, amount=None):
         self.symbol = symbol
         self.amount = amount
@@ -139,66 +164,95 @@ class StockCashTable:
         return
 
     def add_stock_cash(self, stock_cash):
-        conn = self.conn.connect()
-        cursor = self.conn.get_cursor()
-        symbol = stock_cash.get_symbol()
-        amount = stock_cash.get_amount()
-        cursor.execute("insert into stock_cash values(?,?)",(symbol, amount))
-        conn.commit()
+        Session = self.conn.get_sessionmake()
+        session = Session()
+        
+        session.add(stock_cash)
+        
+        session.commit()
 
-        stock_cash = StockCash(symbol, amount)
-
-        return stock_cash 
+        session.refresh(stock_cash)
+        
+        make_transient(stock_cash)
+        
+        session.close()
+        
+        return stock_cash
 
     def get_all_stock_cash(self):
-        conn = self.conn.connect()
-        cursor = self.conn.get_cursor()
-        cursor.execute("select * from stock_cash")
-        result = cursor.fetchall()
+        
+        Session = self.conn.get_sessionmake()
+        
+        session = Session()
+        
+        query_stock_cash_list = session.query(StockCash).all()
         stock_cash_list = []
-        for elem in result:
-            symbol = elem[0]
-            amount = elem[1]
-            stock_cash = StockCash(symbol, amount)
+        for stock_cash in query_stock_cash_list:
+            make_transient(stock_cash)
             stock_cash_list.append(stock_cash)
+            
+        session.close()
+        
         return stock_cash_list
 
     def get_stock_cash_by_symbol(self, symbol):
-        conn = self.conn.connect()
-        cursor = self.conn.get_cursor()
-        cursor.execute("select * from stock_cash where symbol=?", (symbol,))
-        result = cursor.fetchone()
-        if result == None:
-            return None
-        symbol = result[0]
-        amount = result[1]
-        stock_cash = StockCash(symbol, amount) 
+        
+        Session = self.conn.get_sessionmake()
+        
+        session = Session()
+        
+        stock_cash = session.query(StockCash).filter(StockCash.symbol==symbol).scalar()
+        if stock_cash is not None:
+            make_transient(stock_cash)
+            
+        session.close()
         return stock_cash
 
     def update_stock_cash(self, stock_cash):
-        conn = self.conn.connect()
-        cursor = self.conn.get_cursor()
-        symbol = stock_cash.get_symbol()
-        amount = stock_cash.get_amount()
-
-        self.logger.debug("update stock_cash, symbol=%s, amount=%d", 
-                      symbol, amount)
-        cursor.execute("update stock_cash set amount=? where symbol=?", 
-                       (amount, symbol))
-        conn.commit()
-        return
+        
+        Session = self.conn.get_sessionmake()
+        
+        session = Session()
+        
+        new_stock_cash = session.merge(stock_cash)
+        
+        session.commit()
+        
+        session.refresh(new_stock_cash)
+        
+        make_transient(new_stock_cash)
+                       
+        session.close()
+        
+        return new_stock_cash
 
     def delete_stock_cash(self, stock_cash):
-        conn = self.conn.connect()
-        cursor = self.conn.get_cursor()
-        symbol = stock_cash.get_symbol()
-
-        cursor.execute("delete from stock_cash where symbol=?", (symbol,))
-
-        conn.commit()
+        
+        Session = self.conn.get_sessionmake()
+        
+        session = Session()
+        
+        new_stock_cash = session.merge(stock_cash)
+        
+        session.delete(new_stock_cash)
+        
+        session.commit()
+        
+        session.close()
+        
         return
 
-class StockTransaction:
+class StockTransaction(Base):
+    
+    __tablename__ = "stock_transaction"
+    
+    trans_id = Column(Integer, primary_key=True)
+    symbol = Column(String(20), ForeignKey("stock_info.symbol"))
+    buy_or_sell = Column(String(20))
+    quantity = Column(Integer)
+    price = Column(Float)
+    date = Column(Date)
+    
     def __init__(self, trans_id = None):
         self.trans_id = trans_id
         self.symbol = None
@@ -266,120 +320,88 @@ class StockTransactionTable:
         return
 
     def add_stock_transaction(self, stock_transaction):
-        conn = self.conn.connect()
-        cursor = self.conn.get_cursor()
-        symbol = stock_transaction.get_symbol()
-        buy_or_sell = stock_transaction.get_buy_or_sell()
-        quantity = stock_transaction.get_quantity()
-        price = stock_transaction.get_price()
-        date = stock_transaction.get_date()
-        cursor.execute('''insert into stock_transaction(symbol,
-                                                      buy_or_sell,
-                                                      quantity,
-                                                      price,
-                                                      date)
-                                           values(?,?,?,?,?)''',
-                       (symbol, buy_or_sell, quantity, price, date))
-        conn.commit()
-
-        stock_transaction = StockTransaction()
-
+        Session = self.conn.get_sessionmake()
+        
+        session = Session()
+        
+        session.add(stock_transaction)
+        session.commit()
+        
+        session.refresh(stock_transaction)
+        make_transient(stock_transaction)
+        
+        session.close()
         return stock_transaction
 
     def get_all_stock_transaction(self):
-        conn = self.conn.connect()
-        cursor = self.conn.get_cursor()
-        cursor.execute("select * from stock_transaction")
-        result = cursor.fetchall()
+        
+        Session = self.conn.get_sessionmake()
+        session = Session()
+        
+        query_stock_transaction_list = session.query(StockTransaction).all()
+        
         stock_transaction_list = []
-        for elem in result:
-            trans_id = elem[0]
-            symbol = elem[1]
-            buy_or_sell = elem[2]
-            quantity = elem[3]
-            price = elem[4]
-            date = elem[5]
-            stock_transaction = StockTransaction()
-            stock_transaction.set_trans_id(trans_id)
-            stock_transaction.set_symbol(symbol)
-            stock_transaction.set_buy_or_sell(buy_or_sell)
-            stock_transaction.set_quantity(quantity)
-            stock_transaction.set_price(price)
-            stock_transaction.set_date(date)
+        for stock_transaction in query_stock_transaction_list:
+            make_transient(stock_transaction)
             stock_transaction_list.append(stock_transaction)
+            
+        session.close()
         return stock_transaction_list
 
     # below is not updated yet.
     def get_stock_transaction_by_trans_id(self, trans_id):
-        conn = self.conn.connect()
-        cursor = self.conn.get_cursor()
-        cursor.execute("select * from stock_transaction where trans_id=?", \
-                       (trans_id,))
-        result = cursor.fetchone()
-        if result == None:
-            return None
-        stock_transaction = StockTransaction()
-        stock_transaction.set_trans_id(result[0])
-        stock_transaction.set_symbol(result[1])
-        stock_transaction.set_buy_or_sell(result[2])
-        stock_transaction.set_quantity(result[3])
-        stock_transaction.set_price(result[4])
-        stock_transaction.set_date(result[5])
+        
+        Session = self.conn.get_sessionmake()
+        session = Session()
+        
+        stock_transaction = session.query(StockTransaction).filter(StockTransaction.trans_id == trans_id).scalar()
+        
+        if stock_transaction is not None:
+            make_transient(stock_transaction)
+        session.close()
+        
         return stock_transaction
 
     def get_stock_transaction_list_by_symbol(self, symbol):
-        conn = self.conn.connect()
-        cursor = self.conn.get_cursor()
-        cursor.execute("select * from stock_transaction where symbol=?", \
-                       (symbol,))
-        result = cursor.fetchall()
+        
+        Session = self.conn.get_sessionmake()
+        session = Session()
+        
+        query_stock_transaction_list = session.query(StockTransaction).filter(StockTransaction.symbol == symbol).all()
+
         stock_transaction_list = []
-        for elem in result:
-            trans_id = elem[0]
-            symbol = elem[1]
-            buy_or_sell = elem[2]
-            quantity = elem[3]
-            price = elem[4]
-            date = elem[5]
-            stock_transaction = StockTransaction()
-            stock_transaction.set_trans_id(trans_id)
-            stock_transaction.set_symbol(symbol)
-            stock_transaction.set_buy_or_sell(buy_or_sell)
-            stock_transaction.set_quantity(quantity)
-            stock_transaction.set_price(price)
-            stock_transaction.set_date(date)
+        for stock_transaction in query_stock_transaction_list:
+            make_transient(stock_transaction)
             stock_transaction_list.append(stock_transaction)
+
         return stock_transaction_list
 
     def update_stock_transaction(self, stock_transaction):
-        conn = self.conn.connect()
-        cursor = self.conn.get_cursor()
-        trans_id = stock_transaction.get_trans_id()
-        symbol = stock_transaction.get_symbol()
-        buy_or_sell = stock_transaction.get_buy_or_sell()
-        quantity = stock_transaction.get_quantity()
-        price = stock_transaction.get_price()
-        date = stock_transaction.get_date()
+        
+        Session = self.conn.get_sessionmake()
+        session = Session()
+        
+        new_stock_transaction = session.merge(stock_transaction)
+        session.commit()
+        
+        session.refresh(new_stock_transaction)
+        make_transient(new_stock_transaction)
+        
+        session.close()
+        
+        return new_stock_transaction
 
-        self.logger.debug("update stock_transaction, symbol=%s, price=%d",
-                          symbol, price)
-        cursor.execute('''update stock_transaction set symbol=?,
-                                                       buy_or_sell=?,
-                                                       quantity=?,
-                                                       price=?,
-                                                       date=?
-                                                   where trans_id=?''',
-                       (symbol, buy_or_sell, quantity, price, date, trans_id))
-        conn.commit()
-        return
 
     def delete_stock_transaction(self, stock_transaction):
-        conn = self.conn.connect()
-        cursor = self.conn.get_cursor()
-        trans_id = stock_transaction.get_trans_id()
-
-        cursor.execute("delete from stock_transaction where trans_id=?",
-                       (trans_id,))
-
-        conn.commit()
+        
+        Session = self.conn.get_sessionmake()
+        session = Session()
+        
+        new_stock_transaction =  session.merge(stock_transaction)
+        
+        session.delete(new_stock_transaction)
+        
+        session.commit()
+        
         return
+

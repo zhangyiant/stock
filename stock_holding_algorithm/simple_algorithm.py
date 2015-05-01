@@ -136,3 +136,4 @@ class SimpleAlgorithm:
 
     def __str__(self):
         result = ""
+        return result
