@@ -86,39 +86,13 @@ class StockDbConnectionTest(unittest.TestCase):
         stock_transaction.set_date(date(2015, 11, 10))
         stock_transaction_table.add_stock_transaction(stock_transaction)
 
-        stock_transaction_list = \
-            stock_transaction_table.get_all_stock_transaction()
-        print("new table\n")
-        for stock_transaction in stock_transaction_list:
-            print("{0}".format(stock_transaction) + "\n")
-
         stock_transaction = \
             stock_transaction_table.get_stock_transaction_by_trans_id(1)
         stock_transaction.set_quantity("500")
         stock_transaction_table.update_stock_transaction(stock_transaction)
 
-        print("new table\n")
-        stock_transaction_list = \
-            stock_transaction_table.get_all_stock_transaction()
-        for stock_transaction in stock_transaction_list:
-            print("{0}".format(stock_transaction) + "\n")
-
         stock_transaction = \
             stock_transaction_table.get_stock_transaction_by_trans_id(1)
         stock_transaction_table.delete_stock_transaction(stock_transaction)
 
-        print("new table\n")
-        stock_transaction_list = \
-            stock_transaction_table.get_all_stock_transaction()
-        for stock_transaction in stock_transaction_list:
-            print("{0}".format(stock_transaction) + "\n")
-
         return
-
-def main():
-    logging.basicConfig(filename="test.log", level=logging.DEBUG)
-    logging.info("Started")
-    unittest.main()
-
-if __name__ == "__main__":
-    main()
