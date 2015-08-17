@@ -7,7 +7,8 @@ class StockDbConnection:
     def __init__(self, filename):
         self.logger = logging.getLogger(__name__ + ".StockDbConnection")
         self.filename = filename
-        self.engine = create_engine('sqlite:///%s' % filename)
+#        self.engine = create_engine('sqlite:///%s' % filename)
+        self.engine = create_engine('mysql+mysqlconnector://root:anteestudio@192.168.1.235/my_test_db?charset=utf8mb4')
         self.Session = sessionmaker(bind=self.engine)
         self.conn = None
         return
