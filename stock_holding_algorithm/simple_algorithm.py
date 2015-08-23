@@ -13,6 +13,7 @@ class SimpleAlgorithm:
         self.start_price = start_price
         self.stop_price = stop_price
         self.current_price = current_price
+        self.stock_quantity = -1
         self.suggested_buy_or_sell = None
         self.suggested_amount = 0
 
@@ -87,6 +88,15 @@ class SimpleAlgorithm:
         return amount
 
     def get_stock_quantity(self):
+        if (self.stock_quantity < 0):
+            return self.get_stock_quantity_from_db()
+        return self.stock_quantity
+    
+    def set_stock_quantity(self, stock_quantity):
+        self.stock_quantity = stock_quantity
+        return
+    
+    def get_stock_quantity_from_db(self):
         stock_transaction_table = StockTransactionTable(self.conn)
         stock_transaction_list = \
             stock_transaction_table.get_stock_transaction_list_by_symbol(\
