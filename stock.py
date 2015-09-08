@@ -1,7 +1,15 @@
 import logging
 from stock_gui.stock_app import StockApp
+import configparser
+import stock_db.db_connection
+
 
 def main():
+    config = configparser.ConfigParser()
+    config.read("gtja_trade.ini", encoding="utf-8")
+    connection_string = config['Database'].get('connection')
+    stock_db.db_connection.default_connection_string = connection_string
+    
     logger = logging.getLogger()
     logger.setLevel(logging.DEBUG)
     logging.getLogger('sqlalchemy.engine').setLevel(logging.INFO)
