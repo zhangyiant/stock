@@ -17,7 +17,7 @@ class StockDbConnectionTest(unittest.TestCase):
     def test_reset_table(self):
         # test
         logging.info("new StockDbConnection")
-        stock_db_connection = StockDbConnection("example.db")
+        stock_db_connection = StockDbConnection('sqlite:///%s'  % "example.db")
         logging.info("reset table")
         reset_table(stock_db_connection)
 

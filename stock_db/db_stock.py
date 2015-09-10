@@ -443,3 +443,90 @@ class StockPriceRange(Base):
     def __str__(self):
         result = "Symbol:{0}\t Price_low:{1}\t Price_high:{2}".format(self.symbol, self.price_low, self.price_high)
         return result
+    
+class StockPriceRangeTable:
+    def __init__(self, conn = None):
+        if (conn is None):
+            conn = get_default_db_connection()
+        self.logger = logging.getLogger(__name__ + ".StockPriceRangeTable")
+        self.conn = conn
+        return
+
+    def add_stock_price_range(self, stock_price_range):
+        Session = self.conn.get_sessionmake()
+        session = Session()
+        
+        session.add(stock_price_range)
+        
+        session.commit()
+
+        session.refresh(stock_price_range)
+        
+        make_transient(stock_price_range)
+        
+        session.close()
+        
+        return stock_price_range
+
+    def get_all_stock_price_range(self):
+        
+        Session = self.conn.get_sessionmake()
+        
+        session = Session()
+        
+        query_stock_price_range_list = session.query(StockPriceRange).all()
+        stock_price_range_list = []
+        for stock_price_range in query_stock_price_range_list:
+            make_transient(stock_price_range)
+            stock_price_range_list.append(stock_price_range)
+            
+        session.close()
+        
+        return stock_price_range_list
+
+    def get_stock_stock_price_range_by_symbol(self, symbol):
+        
+        Session = self.conn.get_sessionmake()
+        
+        session = Session()
+        
+        stock_price_range = session.query(StockPriceRange).filter(StockPriceRange.symbol==symbol).scalar()
+        if stock_price_range is not None:
+            make_transient(stock_price_range)
+            
+        session.close()
+        return stock_price_range
+
+    def update_stock_price_range(self, stock_price_range):
+        
+        Session = self.conn.get_sessionmake()
+        
+        session = Session()
+        
+        new_stock_price_range = session.merge(stock_price_range)
+        
+        session.commit()
+        
+        session.refresh(new_stock_price_range)
+        
+        make_transient(new_stock_price_range)
+                       
+        session.close()
+        
+        return new_stock_price_range
+
+    def delete_stock_price_range(self, stock_price_range):
+        
+        Session = self.conn.get_sessionmake()
+        
+        session = Session()
+        
+        new_stock_price_range = session.merge(stock_price_range)
+        
+        session.delete(new_stock_price_range)
+        
+        session.commit()
+        
+        session.close()
+        
+        return
