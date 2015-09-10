@@ -405,3 +405,41 @@ class StockTransactionTable:
         
         return
 
+class StockPriceRange(Base):
+    
+    __tablename__ = "stock_price_range"
+    
+    symbol = Column(String(20), ForeignKey("stock_info.symbol"),  primary_key=True)
+    price_low = Column(Float)
+    price_high = Column(Float)
+    
+    def __init__(self, symbol=None, price_low=None, price_high=None):
+        self.symbol = symbol
+        self.price_low = price_low
+        self.price_high = price_high
+        return
+
+    def get_symbol(self):
+        return self.symbol
+
+    def set_symbol(self, symbol):
+        self.symbol = symbol
+        return
+
+    def get_price_low(self):
+        return self.price_low
+
+    def set_price_low(self, price):
+        self.price_low = price
+        return
+
+    def get_price_high(self):
+        return self.price_high
+    
+    def set_price_high(self, price):
+        self.price_high = price
+        return
+    
+    def __str__(self):
+        result = "Symbol:{0}\t Price_low:{1}\t Price_high:{2}".format(self.symbol, self.price_low, self.price_high)
+        return result
