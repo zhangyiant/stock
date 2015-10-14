@@ -84,7 +84,8 @@ class SimpleAlgorithm:
     def get_cash_value(self):
         stock_cash_table = StockCashTable(self.conn)
         stock_cash = stock_cash_table.get_stock_cash_by_symbol(self.symbol)
-        amount = stock_cash.get_amount()
+        # minus the transaction service fee, the database operation need to decouple from the algorithm
+        amount = stock_cash.get_amount() - 20
         return amount
 
     def get_stock_quantity(self):
