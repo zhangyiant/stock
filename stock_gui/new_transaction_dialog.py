@@ -3,6 +3,7 @@ from tkinter import *
 from tkinter.ttk import *
 from stock_db.db_stock import StockCashTable, StockCash
 from stock_db.db_stock import StockTransactionTable, StockTransaction
+import datetime
 
 class NewTransactionFrame(Frame):
     def __init__(self, master=None):
@@ -85,18 +86,19 @@ class NewTransactionFrame(Frame):
         if (not price):
             self.set_status("Price is empty.")
             return
-        date = self.entryDate.get()
-        if (not date):
-            self.set_status("Date is empty.")
-            return
+#         date = self.entryDate.get()
+#         if (not date):
+#             self.set_status("Date is empty.")
+#             return
 
         stock_transaction = StockTransaction()
         stock_transaction.set_symbol(symbol)
         stock_transaction.set_buy_or_sell(buy_or_sell)
         stock_transaction.set_quantity(quantity)
         stock_transaction.set_price(price)
-        stock_transaction.set_date(date)
-
+#        stock_transaction.set_date(date)
+        stock_transaction.set_date(datetime.datetime.now())
+        
         stock_transaction_table = StockTransactionTable()
         stock_transaction_table.add_stock_transaction(stock_transaction)
         
