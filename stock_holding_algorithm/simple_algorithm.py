@@ -131,7 +131,11 @@ class SimpleAlgorithm:
             self.suggested_buy_or_sell = "Sell"
             diff_percentage = current_percentage - expected_percentage
             diff_value = diff_percentage / 100 * self.get_total_value()
-            self.suggested_amount = diff_value / self.current_price
+            tmp_amount = diff_value / self.current_price
+            tmp_amount = tmp_amount - 30
+            if (tmp_amount < 0):
+                tmp_amount = 0
+            self.suggested_amount = tmp_amount
         else:
             self.suggested_buy_or_sell = "Buy"
             diff_percentage = expected_percentage - current_percentage

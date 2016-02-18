@@ -9,6 +9,7 @@ from sqlalchemy.orm import relationship
 from stock_db.db_connection import StockDbConnection
 from stock_db.db_connection import get_default_db_connection
 from sqlalchemy.orm.session import make_transient
+import sqlalchemy
 
 Base = declarative_base()
 
@@ -374,6 +375,8 @@ class StockTransactionTable:
             make_transient(stock_transaction)
             stock_transaction_list.append(stock_transaction)
 
+        session.close()
+
         return stock_transaction_list
 
     def update_stock_transaction(self, stock_transaction):
@@ -528,5 +531,5 @@ class StockPriceRangeTable:
         session.commit()
         
         session.close()
-        
+
         return
