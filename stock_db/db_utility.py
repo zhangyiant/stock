@@ -51,19 +51,20 @@ def reset_table(conn = None):
 
     return
 
-if __name__ == "__main__":
-    reset_table()
+def recreate_db(conn = None):
+    if conn is None:
+        db_connection = get_default_db_connection()
+    else:
+        db_connection = conn
 
-    db_connection = get_default_db_connection()
-    
-    Session = db_connection.get_sessionmake()
-    
-    session = Session()
-    
-    stock_info_list = session.query(StockInfo).all()
-    
-    for stock_info in stock_info_list:
-        print(stock_info)
-    
-    session.close()
-    
+    Base = stock_db.db_stock.Base
+
+    engine = db_connection.get_engine()
+
+    Base.metadata.create_all(engine)
+
+    return
+
+if __name__ == "__main__":
+
+    recreate_db()

@@ -243,6 +243,18 @@ class StockCashTable:
         
         return
 
+class StockClosedTransaction(Base):
+
+    __tablename__ = "stock_closed_transaction"
+    
+    id = Column(Integer, primary_key = True)
+    symbol = Column(String(20), ForeignKey("stock_info.symbol"))
+    buy_price = Column(Float)
+    buy_date = Column(Date)
+    sell_price = Column(Float)
+    sell_date = Column(Date)
+    quantity = Column(Integer)
+
 class StockTransaction(Base):
     
     __tablename__ = "stock_transaction"
