@@ -26,5 +26,6 @@ def get_default_db_connection():
     if (DB_CONN is None):
         DB_CONN = StockDbConnection(default_connection_string)
     #edit from droidedit
+    #which seems good to me.
     return DB_CONN
 
