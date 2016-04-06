@@ -16,7 +16,7 @@ from datetime import date
 class StockDbConnectionTest(unittest.TestCase):
     def setUp(self):
         config = configparser.ConfigParser()
-        config.read("gtja_trade.ini", encoding="utf-8")
+        config.read("stock.ini", encoding="utf-8")
         connection_string = config['Database'].get('connection')
         stock_db.db_connection.default_connection_string = connection_string
         return
