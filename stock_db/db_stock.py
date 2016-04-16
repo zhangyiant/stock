@@ -294,6 +294,19 @@ class StockClosedTransactionTable:
         session.close()
         return transaction_list
 
+    def delete_stock_closed_transaction(self, stock_closed_transaction):
+
+        Session = self.conn.get_sessionmake()
+        session = Session()
+
+        new_stock_closed_transaction =  \
+                    session.merge(stock_closed_transaction)
+
+        session.delete(new_stock_closed_transaction)
+
+        session.commit()
+
+        return
 
 class StockTransaction(Base):
     

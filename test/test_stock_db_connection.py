@@ -110,6 +110,7 @@ class StockDbConnectionTest(unittest.TestCase):
         stock_db_connection = get_default_db_connection()
         reset_table(stock_db_connection)
         transaction_table = StockClosedTransactionTable(stock_db_connection)
+        # new a stock closed transaction
         stock_closed_transaction = StockClosedTransaction()
         stock_closed_transaction.symbol = "601398"
         stock_closed_transaction.buy_price = 4.51
@@ -120,6 +121,7 @@ class StockDbConnectionTest(unittest.TestCase):
         transaction_table.add_stock_closed_transaction(
                                                   stock_closed_transaction)
 
+        # query and compare
         stock_closed_transaction_list = \
                 transaction_table.get_all_stock_closed_transaction()
         self.assertEqual(len(stock_closed_transaction_list),
@@ -138,5 +140,14 @@ class StockDbConnectionTest(unittest.TestCase):
                          date(2015, 12, 30))
         self.assertEqual(stock_closed_transaction.quantity,
                          200)
+
+        # delete the newly created item
+        transaction_table.delete_stock_closed_transaction(
+            stock_closed_transaction)
+        stock_closed_transaction_list = \
+                transaction_table.get_all_stock_closed_transaction()
+        self.assertEqual(len(stock_closed_transaction_list),
+                         0,
+                         "The list should be an empty list")
 
         return
