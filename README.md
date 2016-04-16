@@ -25,3 +25,8 @@ python3 stock.py
 ```sh
 python stock.py
 ```
+
+# unittest
+```sh
+python -m unittest discover test
+```
