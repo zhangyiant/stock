@@ -246,14 +246,54 @@ class StockCashTable:
 class StockClosedTransaction(Base):
 
     __tablename__ = "stock_closed_transaction"
-    
-    id = Column(Integer, primary_key = True)
+
+    trans_id = Column(Integer, primary_key = True)
     symbol = Column(String(20), ForeignKey("stock_info.symbol"))
     buy_price = Column(Float)
     buy_date = Column(Date)
     sell_price = Column(Float)
     sell_date = Column(Date)
     quantity = Column(Integer)
+
+class StockClosedTransactionTable:
+
+    def __init__(self, conn = None):
+        if (conn is None):
+            conn = get_default_db_connection()
+        self.logger = logging.getLogger(__name__ +
+                                        ".StockClosedTransactionTable")
+        self.conn = conn
+        return
+
+    def add_stock_closed_transaction(self, stock_closed_transaction):
+        Session = self.conn.get_sessionmake()
+
+        session = Session()
+
+        session.add(stock_closed_transaction)
+        session.commit()
+
+        session.refresh(stock_closed_transaction)
+        make_transient(stock_closed_transaction)
+
+        session.close()
+        return stock_closed_transaction
+
+    def get_all_stock_closed_transaction(self):
+
+        Session = self.conn.get_sessionmake()
+        session = Session()
+
+        query_transaction_list = session.query(StockClosedTransaction).all()
+
+        transaction_list = []
+        for transaction in query_transaction_list:
+            make_transient(transaction)
+            transaction_list.append(transaction)
+
+        session.close()
+        return transaction_list
+
 
 class StockTransaction(Base):
     

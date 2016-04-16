@@ -9,6 +9,8 @@ from stock_db.db_stock import StockCashTable
 from stock_db.db_stock import StockCash
 from stock_db.db_stock import StockTransaction
 from stock_db.db_stock import StockTransactionTable
+from stock_db.db_stock import StockClosedTransaction
+from stock_db.db_stock import StockClosedTransactionTable
 from stock_db.db_utility import reset_table
 from stock_db.db_connection import get_default_db_connection
 from datetime import date
@@ -20,7 +22,7 @@ class StockDbConnectionTest(unittest.TestCase):
         connection_string = config['Database'].get('test_connection')
         stock_db.db_connection.default_connection_string = connection_string
         return
- 
+
     def test_reset_table(self):
         # test
         logging.info("new StockDbConnection")
@@ -101,5 +103,40 @@ class StockDbConnectionTest(unittest.TestCase):
         stock_transaction = \
             stock_transaction_table.get_stock_transaction_by_trans_id(1)
         stock_transaction_table.delete_stock_transaction(stock_transaction)
+
+        return
+
+    def test_stock_closed_transaction_sanity(self):
+        stock_db_connection = get_default_db_connection()
+        reset_table(stock_db_connection)
+        transaction_table = StockClosedTransactionTable(stock_db_connection)
+        stock_closed_transaction = StockClosedTransaction()
+        stock_closed_transaction.symbol = "601398"
+        stock_closed_transaction.buy_price = 4.51
+        stock_closed_transaction.sell_price = 4.61
+        stock_closed_transaction.buy_date = date(2015, 11, 10)
+        stock_closed_transaction.sell_date = date(2015, 12, 30)
+        stock_closed_transaction.quantity = 200
+        transaction_table.add_stock_closed_transaction(
+                                                  stock_closed_transaction)
+
+        stock_closed_transaction_list = \
+                transaction_table.get_all_stock_closed_transaction()
+        self.assertEqual(len(stock_closed_transaction_list),
+                         1,
+                         "There should be only 1 item")
+        stock_closed_transaction = stock_closed_transaction_list[0]
+        self.assertEqual(stock_closed_transaction.symbol,
+                         "601398")
+        self.assertEqual(stock_closed_transaction.buy_price,
+                         4.51)
+        self.assertEqual(stock_closed_transaction.sell_price,
+                         4.61)
+        self.assertEqual(stock_closed_transaction.buy_date,
+                         date(2015, 11, 10))
+        self.assertEqual(stock_closed_transaction.sell_date,
+                         date(2015, 12, 30))
+        self.assertEqual(stock_closed_transaction.quantity,
+                         200)
 
         return
