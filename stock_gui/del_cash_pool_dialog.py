@@ -1,16 +1,23 @@
-import logging
+'''
+    del_cash_pool_dialog
+'''
 from tkinter import *
 from tkinter.ttk import *
 from stock_db.db_stock import StockCashTable, StockCash
 
 class DelCashPoolFrame(Frame):
+    '''
+        class DelCashPoolFrame
+    '''
     def __init__(self, master=None):
         self.master = master
         Frame.__init__(self, master)
         self.init_widget()
 
     def init_widget(self):
-        
+        '''
+            init_widget
+        '''
         self.scrollbar = Scrollbar(self)
         self.lstboxStockCash = Listbox(self)
         self.lstboxStockCash.grid(row = 0, column = 0, columnspan = 2)
@@ -19,12 +26,11 @@ class DelCashPoolFrame(Frame):
         self.scrollbar["command"] = self.lstboxStockCash.yview
         self.refresh_list_box()
 
-        
         self.btnDelete = Button(self)
         self.btnDelete["text"] = "Delete"
         self.btnDelete.grid(row = 1, column = 0)
         self.btnDelete["command"] = self.delete_stock_cash
-         
+
         self.btnCancel = Button(self)
         self.btnCancel["text"] = "Cancel"
         self.btnCancel.grid(row = 1, column = 1)
