@@ -9,3 +9,8 @@ stock_db/.#db_connection.py
 stock_db/.#db_stock.py
 .project
 .pydevproject
+**/.cache/
+GPATH
+GRTAGS
+GTAGS
+stock.ini
