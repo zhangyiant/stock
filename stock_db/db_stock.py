@@ -94,21 +94,21 @@ class StockInfoTable:
         return stock_info
 
     def update_stock_info(self, stock_info):
-        
+
         Session = self.conn.get_sessionmake()
-        
+
         session = Session()
-        
+
         new_stock_info = session.merge(stock_info)
-        
+
         session.commit()
-        
+
         session.refresh(new_stock_info)
-        
+
         make_transient(new_stock_info)
-        
+
         session.close()
-        
+
         return new_stock_info
 
     def delete_stock_info(self, stock_info):
@@ -308,17 +308,71 @@ class StockClosedTransactionTable:
 
         return
 
+    @staticmethod
+    def close_transaction(stock_transaction_1, stock_transaction_2):
+        '''
+            close_transaction
+        '''
+        if stock_transaction_1.symbol != \
+            stock_transaction_2.symbol:
+            raise ValueError("not same symbol")
+        if stock_transaction_1.quantity != \
+            stock_transaction_2.quantity:
+            raise ValueError("not same quantity")
+        if stock_transaction_1.buy_or_sell == \
+            stock_transaction_2.buy_or_sell:
+            raise ValueError("same buy or sell flag")
+
+        conn = get_default_db_connection()
+        Session = conn.get_sessionmake()
+        session = Session()
+
+        stock_closed_transaction = StockClosedTransaction()
+        stock_closed_transaction.symbol = stock_transaction_1.symbol
+        stock_closed_transaction.quantity = stock_transaction_1.quantity
+        if stock_transaction_1.buy_or_sell == \
+           StockTransaction.BUY_FLAG:
+            stock_closed_transaction.buy_price = stock_transaction_1.price
+            stock_closed_transaction.buy_date = stock_transaction_1.date
+            stock_closed_transaction.sell_price = stock_transaction_2.price
+            stock_closed_transaction.sell_date = stock_transaction_2.date
+        else:
+            stock_closed_transaction.buy_price = stock_transaction_2.price
+            stock_closed_transaction.buy_date = stock_transaction_2.date
+            stock_closed_transaction.sell_price = stock_transaction_1.price
+            stock_closed_transaction.sell_date = stock_transaction_1.date
+        session.add(stock_closed_transaction)
+
+        new_stock_transaction = session.merge(stock_transaction_1)
+        session.delete(new_stock_transaction)
+        new_stock_transaction = session.merge(stock_transaction_2)
+        session.delete(new_stock_transaction)
+
+        session.commit()
+
+        session.refresh(stock_closed_transaction)
+        make_transient(stock_closed_transaction)
+
+        session.close()
+
+        return stock_closed_transaction
+
 class StockTransaction(Base):
-    
+    '''
+        class StockTransaction
+    '''
     __tablename__ = "stock_transaction"
-    
+
     trans_id = Column(Integer, primary_key=True)
     symbol = Column(String(20), ForeignKey("stock_info.symbol"))
     buy_or_sell = Column(String(20))
     quantity = Column(Integer)
     price = Column(Float)
     date = Column(Date)
-    
+
+    BUY_FLAG = "Buy"
+    SELL_FLAG = "Sell"
+
     def __init__(self, trans_id = None):
         self.trans_id = trans_id
         self.symbol = None
