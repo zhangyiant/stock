@@ -17,8 +17,15 @@ class StockDbConnection:
         return self.engine
     
     def get_sessionmake(self):
-        return self.Session  
-    
+        return self.Session
+
+    def create_session(self):
+        '''
+            create_session
+        '''
+        session = self.Session()
+        return session
+
 DB_CONN = None
 
 def get_default_db_connection():

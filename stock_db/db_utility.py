@@ -4,8 +4,13 @@
 import logging
 import csv
 
+from sqlalchemy import desc
 from stock_db.db_connection import get_default_db_connection
-from stock_db.db_stock import StockInfoTable, StockInfo
+from stock_db.db_stock import StockInfoTable,\
+                              StockInfo,\
+                              StockTransaction,\
+                              StockClosedTransactionTable
+from sqlalchemy.orm.session import make_transient
 import stock_db.db_stock
 
 LOGGER = logging.getLogger(__name__ + ".StockDbUtility")
@@ -36,7 +41,7 @@ def import_stock_info(conn=None):
                 stock_info_table.add_stock_info(stock_info)
     return
 
-def reset_table(conn = None):
+def reset_table(conn=None):
     '''
         reset_table
     '''
@@ -74,6 +79,57 @@ def recreate_db(conn=None):
 
     return
 
+def clean_transaction_by_symbol(symbol, conn=None):
+    '''
+        clean_transaction_table_by_symbol
+    '''
+    if conn is None:
+        db_connection = get_default_db_connection()
+    else:
+        db_connection = conn
+    session = db_connection.create_session()
+
+    query = session.query(StockTransaction).\
+            filter(StockTransaction.symbol == symbol).\
+            filter(StockTransaction.buy_or_sell ==
+                   StockTransaction.SELL_FLAG).\
+            order_by(desc(StockTransaction.date))
+    sell_transaction = query.first()
+
+    if (sell_transaction is None):
+        session.close()
+        raise Exception("no need to clean up transaction table")
+
+    query = session.query(StockTransaction).\
+            filter(StockTransaction.symbol == symbol).\
+            filter(StockTransaction.buy_or_sell ==
+                   StockTransaction.BUY_FLAG).\
+            order_by(desc(StockTransaction.date))
+    found = False
+    buy_transaction = None
+    for trans in query:
+        if (trans.date <= sell_transaction.date) and \
+           (trans.quantity == sell_transaction.quantity) and \
+           (trans.price < sell_transaction.price):
+            buy_transaction = trans
+            found = True
+            break
+
+    if not found:
+        session.close()
+        raise Exception("no matched buy transaction found")
+
+    print(buy_transaction)
+    print(sell_transaction)
+    make_transient(buy_transaction)
+    make_transient(sell_transaction)
+
+    session.close()
+
+#    StockClosedTransactionTable.close_transaction(buy_transaction,
+#                                                  sell_transaction)
+
+    return
 
 if __name__ == "__main__":
     recreate_db()
