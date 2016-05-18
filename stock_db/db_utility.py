@@ -126,8 +126,8 @@ def clean_transaction_by_symbol(symbol, conn=None):
 
     session.close()
 
-#    StockClosedTransactionTable.close_transaction(buy_transaction,
-#                                                  sell_transaction)
+    StockClosedTransactionTable.close_transaction(buy_transaction,
+                                                  sell_transaction)
 
     return
 
