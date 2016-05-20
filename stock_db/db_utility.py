@@ -79,6 +79,38 @@ def recreate_db(conn=None):
 
     return
 
+def split_transaction(conn = None):
+    '''
+        split_transaction
+    '''
+    if conn is None:
+        db_connection = get_default_db_connection()
+    else:
+        db_connection = conn
+    session = db_connection.create_session()
+
+    query = session.query(StockTransaction).\
+            filter(StockTransaction.quantity > 100)
+    transactions = query.all()
+    for transaction in transactions:
+        quantity = transaction.quantity
+        i = 100
+        while i <= quantity:
+            trans = StockTransaction()
+            trans.buy_or_sell = transaction.buy_or_sell
+            trans.date = transaction.date
+            trans.price = transaction.price
+            trans.symbol = transaction.symbol
+            trans.quantity = 100
+            session.add(trans)
+            print("ADD")
+            i = i + 100
+        session.delete(transaction)
+        session.commit()
+        break
+    session.close()
+    return
+
 def clean_transaction_by_symbol(symbol, conn=None):
     '''
         clean_transaction_table_by_symbol
@@ -104,12 +136,11 @@ def clean_transaction_by_symbol(symbol, conn=None):
             filter(StockTransaction.symbol == symbol).\
             filter(StockTransaction.buy_or_sell ==
                    StockTransaction.BUY_FLAG).\
-            order_by(desc(StockTransaction.date))
+            order_by(desc(StockTransaction.price))
     found = False
     buy_transaction = None
     for trans in query:
-        if (trans.date <= sell_transaction.date) and \
-           (trans.quantity == sell_transaction.quantity) and \
+        if (trans.quantity == sell_transaction.quantity) and \
            (trans.price < sell_transaction.price):
             buy_transaction = trans
             found = True
