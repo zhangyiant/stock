@@ -25,6 +25,7 @@ def main():
     file_handler.setFormatter(formatter)
     logger.addHandler(file_handler)
 
+
     logging.info("App started.")
     stock_app = StockApp()
     stock_app.mainloop()
