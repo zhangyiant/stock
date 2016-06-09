@@ -424,6 +424,28 @@ class StockTransaction(Base):
         self.date = date
         return
 
+    @staticmethod
+    def get_owned_quantity(symbol):
+        '''
+            get owned quantity
+        '''
+        stock_transaction_table = StockTransactionTable()
+        stock_transaction_list = \
+                                  stock_transaction_table.\
+                                  get_stock_transaction_list_by_symbol(
+                                      symbol)
+        quantity = 0
+        for stock_transaction in stock_transaction_list:
+            buy_or_sell = stock_transaction.get_buy_or_sell()
+            if buy_or_sell == "Buy":
+                quantity = quantity + stock_transaction.get_quantity()
+            elif buy_or_sell == "Sell":
+                quantity = quantity - stock_transaction.get_quantity()
+            else:
+                # Need to raise an error
+                return None
+        return quantity
+
     def __str__(self):
         result = "Trans ID: {0}\tSymbol: {1}".format(self.trans_id, self.symbol)
         result = result + "\t{0}\tquantity: {1}\tprice: {2}".format(
