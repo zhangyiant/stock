@@ -160,7 +160,7 @@ class StockClosedTransactionTableTest(unittest.TestCase):
         trans_id_2 = stock_transaction_2.trans_id
 
         owned_quantity = StockTransaction.get_owned_quantity("601398")
-        self.assertEqual(owned_quanity,
+        self.assertEqual(owned_quantity,
                          100)
 
         return
