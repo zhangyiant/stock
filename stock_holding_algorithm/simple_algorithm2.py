@@ -110,25 +110,25 @@ class SimpleAlgorithm:
     def calculate(self):
         expected_quantity = self.get_expected_percentage * self.current_price
         owned_quantity = StockTransaction.get_owned_quantity(self.symbol)
+        lowest_buy_price = StockTransaction.get_lowest_buy_price(self.symbol)
 
         if expected_quantity > owned_quantity:
             buy_quantity = expected_quantity - owned_quantity
-
-        expected_percentage = self.get_expected_percentage()
-        current_percentage = self.get_current_percentage()
-        if (current_percentage > expected_percentage):
-            self.suggested_buy_or_sell = "Sell"
-            diff_percentage = current_percentage - expected_percentage
-            diff_value = diff_percentage / 100 * self.get_total_value()
-            tmp_amount = diff_value / self.current_price
-            if (tmp_amount < 0):
-                tmp_amount = 0
-            self.suggested_amount = tmp_amount
+            if self.current_price >= lowest_buy_price:
+                self.suggested_buy_or_sell = None
+            else:
+                self.suggested_buy_or_sell = "Buy"
+                self.suggested_amount = buy_quantity
+        elif expected_quantity == owned_quantity:
+            self.suggested_buy_or_sell = None
         else:
-            self.suggested_buy_or_sell = "Buy"
-            diff_percentage = expected_percentage - current_percentage
-            diff_value = diff_percentage / 100 * self.get_total_value()
-            self.suggested_amount = diff_value / self.current_price
+            # expected_quantity < owned_quantity
+            sell_quantity = owned_quantity - expected_quantity
+            if self.current_price <= lowest_buy_price:
+                self.suggested_buy_or_sell = None
+            else:
+                self.suggested_buy_or_sell = "Sell"
+                self.suggested_amount = sell_quantity
         return
 
     def get_suggested_buy_or_sell(self):
