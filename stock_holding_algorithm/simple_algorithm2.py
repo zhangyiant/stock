@@ -108,6 +108,12 @@ class SimpleAlgorithm:
         return current_percentage
 
     def calculate(self):
+        expected_quantity = self.get_expected_percentage * self.current_price
+        owned_quantity = StockTransaction.get_owned_quantity(self.symbol)
+
+        if expected_quantity > owned_quantity:
+            buy_quantity = expected_quantity - owned_quantity
+
         expected_percentage = self.get_expected_percentage()
         current_percentage = self.get_current_percentage()
         if (current_percentage > expected_percentage):
