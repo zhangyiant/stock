@@ -5,7 +5,7 @@ from sqlalchemy import ForeignKey
 from sqlalchemy import Column, Integer, String, Float, Date
 from sqlalchemy.orm import make_transient
 from sqlalchemy.orm import relationship
-from sqlalchemy import desc
+from sqlalchemy import asc
 
 from stock_db.db_connection import StockDbConnection
 from stock_db.db_connection import get_default_db_connection
@@ -454,12 +454,12 @@ class StockTransaction(Base):
         '''
         if conn is None:
             conn = get_default_db_connection()
-        session = self.conn.get_sessionmake()()
+        session = conn.get_sessionmake()()
 
         sell_count = session.query(StockTransaction).\
                      filter(StockTransaction.buy_or_sell ==
                             StockTransaction.SELL_FLAG).\
-                            .count()
+                            count()
         if sell_count > 0:
             session.close()
             raise Exception("sell count > 0")
@@ -467,7 +467,7 @@ class StockTransaction(Base):
         stock_transaction = session.query(StockTransaction).\
                              filter(StockTransaction.buy_or_sell ==
                                     StockTransaction.BUY_FLAG).\
-                                    order_by(desc(StockTransaction.price)).\
+                                    order_by(asc(StockTransaction.price)).\
                                     first()
         if stock_transaction is None:
             result = 9999.00

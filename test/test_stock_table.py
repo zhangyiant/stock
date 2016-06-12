@@ -193,7 +193,7 @@ class StockClosedTransactionTableTest(unittest.TestCase):
         stock_transaction_table.add_stock_transaction(stock_transaction_2)
         trans_id_2 = stock_transaction_2.trans_id
 
-        lowest_price = StockTransaction.get_lowest_price("601398")
+        lowest_price = StockTransaction.get_lowest_buy_price("601398")
         self.assertEqual(lowest_price, 4.81)
 
         return
