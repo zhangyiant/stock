@@ -96,25 +96,9 @@ class SimpleAlgorithm:
         self.stock_quantity = stock_quantity
         return
 
-    def get_stock_quantity_from_db(self):
-        stock_transaction_table = StockTransactionTable(self.conn)
-        stock_transaction_list = \
-            stock_transaction_table.get_stock_transaction_list_by_symbol(\
-                self.symbol)
-        quantity = 0
-        for stock_transaction in stock_transaction_list:
-            buy_or_sell = stock_transaction.get_buy_or_sell()
-            if (buy_or_sell == "Buy"):
-                quantity = quantity + stock_transaction.get_quantity()
-            elif (buy_or_sell == "Sell"):
-                quantity = quantity - stock_transaction.get_quantity()
-            else:
-                # Need to raise an error
-                return None
-        return quantity
-
     def get_stock_value(self):
-        stock_value = self.get_stock_quantity() * self.current_price
+        stock_value = StockTransaction.get_owned_quantity(self.symbol) * \
+                      self.current_price
         return stock_value
 
     def get_current_percentage(self):
@@ -131,7 +115,6 @@ class SimpleAlgorithm:
             diff_percentage = current_percentage - expected_percentage
             diff_value = diff_percentage / 100 * self.get_total_value()
             tmp_amount = diff_value / self.current_price
-            tmp_amount = tmp_amount - 30
             if (tmp_amount < 0):
                 tmp_amount = 0
             self.suggested_amount = tmp_amount
