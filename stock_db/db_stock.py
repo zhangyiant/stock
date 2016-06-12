@@ -477,6 +477,37 @@ class StockTransaction(Base):
 
         return result
 
+    @staticmethod
+    def get_lowest_buy_price_quantity(symbol, conn=None):
+        '''
+            get quantity of the lowest buy price transaction
+        '''
+        if conn is None:
+            conn = get_default_db_connection()
+        session = conn.get_sessionmake()()
+
+        sell_count = session.query(StockTransaction).\
+                     filter(StockTransaction.buy_or_sell ==
+                            StockTransaction.SELL_FLAG).\
+                            count()
+        if sell_count > 0:
+            session.close()
+            raise Exception("sell count > 0")
+
+        stock_transaction = session.query(StockTransaction).\
+                             filter(StockTransaction.buy_or_sell ==
+                                    StockTransaction.BUY_FLAG).\
+                                    order_by(asc(StockTransaction.price)).\
+                                    first()
+        if stock_transaction is None:
+            result = 0
+        else:
+            result = stock_transaction.quantity
+
+        session.close()
+
+        return result
+
     def __str__(self):
         result = "Trans ID: {0}\tSymbol: {1}".format(self.trans_id, self.symbol)
         result = result + "\t{0}\tquantity: {1}\tprice: {2}".format(

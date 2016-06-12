@@ -243,3 +243,82 @@ class StockClosedTransactionTableTest(unittest.TestCase):
             lowest_price = StockTransaction.get_lowest_buy_price("601398")
 
         return
+
+    def test_lowest_buy_price_quantity(self):
+        '''
+            test lowest buy price quantity
+        '''
+        stock_db_connection = get_default_db_connection()
+        reset_table(stock_db_connection)
+        stock_transaction_table = StockTransactionTable(stock_db_connection)
+
+        # init transaction 1
+        stock_transaction_1 = StockTransaction()
+        stock_transaction_1.symbol = "601398"
+        stock_transaction_1.buy_or_sell = StockTransaction.BUY_FLAG
+        stock_transaction_1.date = date(2016, 5, 15)
+        stock_transaction_1.quantity = 200
+        stock_transaction_1.price = 4.9
+        stock_transaction_table.add_stock_transaction(stock_transaction_1)
+        trans_id_1 = stock_transaction_1.trans_id
+
+        # init transaction 2
+        stock_transaction_2 = StockTransaction()
+        stock_transaction_2.symbol = "601398"
+        stock_transaction_2.buy_or_sell = StockTransaction.BUY_FLAG
+        stock_transaction_2.date = date(2016, 5, 16)
+        stock_transaction_2.quantity = 100
+        stock_transaction_2.price = 4.81
+        stock_transaction_table.add_stock_transaction(stock_transaction_2)
+        trans_id_2 = stock_transaction_2.trans_id
+
+        quantity = StockTransaction.get_lowest_buy_price_quantity("601398")
+        self.assertEqual(quantity, 100)
+
+        return
+
+    def test_lowest_buy_price_quantity2(self):
+        '''
+            test lowest buy price quantity
+        '''
+        stock_db_connection = get_default_db_connection()
+        reset_table(stock_db_connection)
+        stock_transaction_table = StockTransactionTable(stock_db_connection)
+
+        quantity = StockTransaction.get_lowest_buy_price_quantity("601398")
+        self.assertEqual(quantity, 0)
+
+        return
+
+    def test_lowest_buy_price_quantity3(self):
+        '''
+            test lowest buy price quantity with sell transaction
+        '''
+        stock_db_connection = get_default_db_connection()
+        reset_table(stock_db_connection)
+        stock_transaction_table = StockTransactionTable(stock_db_connection)
+
+        # init transaction 1
+        stock_transaction_1 = StockTransaction()
+        stock_transaction_1.symbol = "601398"
+        stock_transaction_1.buy_or_sell = StockTransaction.BUY_FLAG
+        stock_transaction_1.date = date(2016, 5, 15)
+        stock_transaction_1.quantity = 200
+        stock_transaction_1.price = 4.51
+        stock_transaction_table.add_stock_transaction(stock_transaction_1)
+        trans_id_1 = stock_transaction_1.trans_id
+
+        # init transaction 2
+        stock_transaction_2 = StockTransaction()
+        stock_transaction_2.symbol = "601398"
+        stock_transaction_2.buy_or_sell = StockTransaction.SELL_FLAG
+        stock_transaction_2.date = date(2016, 5, 16)
+        stock_transaction_2.quantity = 100
+        stock_transaction_2.price = 4.81
+        stock_transaction_table.add_stock_transaction(stock_transaction_2)
+        trans_id_2 = stock_transaction_2.trans_id
+
+        with self.assertRaises(Exception):
+            quantity = StockTransaction.get_lowest_buy_price_quantity("601398")
+
+        return
