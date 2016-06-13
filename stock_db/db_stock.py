@@ -457,6 +457,7 @@ class StockTransaction(Base):
         session = conn.get_sessionmake()()
 
         sell_count = session.query(StockTransaction).\
+                     filter(StockTransaction.symbol == symbol).\
                      filter(StockTransaction.buy_or_sell ==
                             StockTransaction.SELL_FLAG).\
                             count()
@@ -487,6 +488,7 @@ class StockTransaction(Base):
         session = conn.get_sessionmake()()
 
         sell_count = session.query(StockTransaction).\
+                     filter(StockTransaction.symbol == symbol).\
                      filter(StockTransaction.buy_or_sell ==
                             StockTransaction.SELL_FLAG).\
                             count()
