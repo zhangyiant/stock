@@ -114,18 +114,17 @@ class SimpleAlgorithm:
                                 self.get_total_value() / 100 / \
                                 self.current_price)
         owned_quantity = StockTransaction.get_owned_quantity(self.symbol)
+        print("expected quantity: \t{0}".format(expected_quantity))
+        print("owned quantity: \t{0}".format(owned_quantity))
         lowest_buy_price = StockTransaction.get_lowest_buy_price(self.symbol)
 
         if expected_quantity > owned_quantity:
             buy_quantity = expected_quantity - owned_quantity
-            if self.current_price >= lowest_buy_price:
-                self.suggested_buy_or_sell = None
-            else:
-                self.suggested_buy_or_sell = "Buy"
-                self.suggested_amount = buy_quantity
+            self.suggested_buy_or_sell = "Buy"
+            self.suggested_amount = buy_quantity
         elif expected_quantity == owned_quantity:
             self.suggested_buy_or_sell = None
-        else:
+        elif expected_quantity < owned_quantity:
             # expected_quantity < owned_quantity
             sell_quantity = owned_quantity - expected_quantity
             if self.current_price <= lowest_buy_price:
@@ -133,6 +132,8 @@ class SimpleAlgorithm:
             else:
                 self.suggested_buy_or_sell = "Sell"
                 self.suggested_amount = sell_quantity
+        else:
+            self.suggested_buy_or_sell = None
         return
 
     def get_suggested_buy_or_sell(self):
