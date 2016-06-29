@@ -466,10 +466,11 @@ class StockTransaction(Base):
             raise Exception("sell count > 0")
 
         stock_transaction = session.query(StockTransaction).\
-                             filter(StockTransaction.buy_or_sell ==
-                                    StockTransaction.BUY_FLAG).\
-                                    order_by(asc(StockTransaction.price)).\
-                                    first()
+                            filter(StockTransaction.symbol == symbol).\
+                            filter(StockTransaction.buy_or_sell ==
+                                   StockTransaction.BUY_FLAG).\
+                                   order_by(asc(StockTransaction.price)).\
+                                   first()
         if stock_transaction is None:
             result = 9999.00
         else:
@@ -497,10 +498,11 @@ class StockTransaction(Base):
             raise Exception("sell count > 0")
 
         stock_transaction = session.query(StockTransaction).\
-                             filter(StockTransaction.buy_or_sell ==
-                                    StockTransaction.BUY_FLAG).\
-                                    order_by(asc(StockTransaction.price)).\
-                                    first()
+                            filter(StockTransaction.symbol == symbol).\
+                            filter(StockTransaction.buy_or_sell ==
+                                   StockTransaction.BUY_FLAG).\
+                                   order_by(asc(StockTransaction.price)).\
+                                   first()
         if stock_transaction is None:
             result = 0
         else:
