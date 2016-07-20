@@ -58,7 +58,7 @@ class SimpleAlgorithm:
         expected_percentage = current_price_percentage * 100
         if expected_percentage > 100:
             return 100
-        elif expected_erpcentage < 0:
+        elif expected_percentage < 0:
             return 0
         else:
             return expected_percentage
