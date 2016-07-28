@@ -117,6 +117,10 @@ class SimpleAlgorithm:
         
         expected_percentage = self.get_expected_percentage()
         current_percentage = self.get_current_percentage()
+
+        print("expected_percentage: {0}".format(expected_percentage))
+        print("current_percentage: {0}".format(current_percentage))
+
         if (current_percentage > expected_percentage):
             self.suggested_buy_or_sell = "Sell"
             diff_percentage = current_percentage - expected_percentage
