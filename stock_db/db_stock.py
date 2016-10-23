@@ -2,7 +2,7 @@ import logging
 
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import ForeignKey
-from sqlalchemy import Column, Integer, String, Float, Date
+from sqlalchemy import Column, Integer, String, Float, DateTime
 from sqlalchemy.orm import make_transient
 from sqlalchemy.orm import relationship
 from sqlalchemy import asc
@@ -251,9 +251,9 @@ class StockClosedTransaction(Base):
     trans_id = Column(Integer, primary_key = True)
     symbol = Column(String(20), ForeignKey("stock_info.symbol"))
     buy_price = Column(Float)
-    buy_date = Column(Date)
+    buy_date = Column(DateTime)
     sell_price = Column(Float)
-    sell_date = Column(Date)
+    sell_date = Column(DateTime)
     quantity = Column(Integer)
 
 class StockClosedTransactionTable:
@@ -369,7 +369,7 @@ class StockTransaction(Base):
     buy_or_sell = Column(String(20))
     quantity = Column(Integer)
     price = Column(Float)
-    date = Column(Date)
+    date = Column(DateTime)
 
     BUY_FLAG = "Buy"
     SELL_FLAG = "Sell"
