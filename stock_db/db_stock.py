@@ -157,6 +157,22 @@ class StockCash(Base):
         result = "Symbol:{0}\t Amount:{1}".format(self.symbol, self.amount)
         return result
 
+class StockLowestGain(Base):
+    """
+        SQLAlchemy table, save the lowest gain if we want to sell
+    """
+    __tablename__ = "stock_lowest_gain"
+
+    symbol = Column(String(20),
+                    ForeignKey("stock_info.symbol"),
+                    primary_key=True)
+    lowest_gain = Column(Float)
+
+    def __str__(self):
+        result = "Symbol: {0}, ".format(self.symbol)
+        result += "lowest_gain: {0}".format(self.lowest_gain)
+        return result
+
 class StockCashTable:
     def __init__(self, conn = None):
         if (conn is None):
