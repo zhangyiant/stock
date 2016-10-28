@@ -5,15 +5,17 @@ import logging
 import csv
 
 from sqlalchemy import desc
+from sqlalchemy.orm.session import make_transient
+
 from stock_db.db_connection import get_default_db_connection
 from stock_db.db_stock import StockInfoTable,\
                               StockInfo,\
                               StockTransaction,\
-                              StockClosedTransactionTable
-from sqlalchemy.orm.session import make_transient
+                              StockClosedTransactionTable, \
+                              StockLowestGain
 import stock_db.db_stock
 
-LOGGER = logging.getLogger(__name__ + ".StockDbUtility")
+LOGGER = logging.getLogger(__name__)
 
 def import_stock_info(conn=None):
     '''
@@ -110,6 +112,29 @@ def split_transaction(conn = None):
         break
     session.close()
     return
+
+def get_lowest_gain(symbol, conn=None):
+    """
+        Get lowest gain by symbol
+    """
+    if conn is None:
+        db_connection = get_default_db_connection()
+    else:
+        db_connection = conn
+    session = db_connection.create_session()
+
+    stock_lowest_gain = session.query(StockLowestGain).\
+            filter(StockLowestGain.symbol == symbol).\
+            one_or_none()
+
+    if stock_lowest_gain is None:
+        lowest_gain = None
+    else:
+        lowest_gain = stock_lowest_gain.lowest_gain
+
+    session.close()
+
+    return lowest_gain
 
 def clean_transaction_by_symbol(symbol, conn=None):
     '''
