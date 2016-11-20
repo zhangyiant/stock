@@ -756,3 +756,15 @@ class StockPriceRangeTable:
         session.close()
 
         return
+
+class StockCashTotalHistoryValue(Base):
+    """
+        Total stock and cash value every day
+    """
+
+    __tablename__ = "stock_cash_total_history_value"
+
+    history_value_id = Column(Integer, primary_key=True)
+    symbol = Column(String(20), ForeignKey("stock_info.symbol"))
+    date = Column(DateTime)
+    total_value = Column(Float)
