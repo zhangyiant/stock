@@ -10,7 +10,8 @@ from stock_db.db_stock import \
     StockInfo, \
     StockCash, \
     StockTransaction, \
-    StockCashTotalHistoryValue
+    StockCashTotalHistoryValue, \
+    AllInvestmentsHistory
 
 # read configuration
 CONFIG_PARSER = configparser.ConfigParser()
@@ -78,7 +79,7 @@ def update_total_history(symbol, session):
     session.add(stock_cash_total_history_value)
     session.commit()
 
-    return
+    return total_amount
 
 def main():
     '''
@@ -89,9 +90,17 @@ def main():
 
     stock_infos = session.query(StockInfo).all()
 
+    total = 0.0
     for stock_info in stock_infos:
         symbol = stock_info.symbol
-        update_total_history(symbol, session)
+        total_amount = update_total_history(symbol, session)
+        total += total_amount
+
+    all_investments_history = AllInvestmentsHistory(
+        date=datetime.utcnow(),
+        total_value=total)
+    session.add(all_investments_history)
+    session.commit()
 
     session.close()
     return
