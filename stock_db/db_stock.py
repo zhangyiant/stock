@@ -768,3 +768,14 @@ class StockCashTotalHistoryValue(Base):
     symbol = Column(String(20), ForeignKey("stock_info.symbol"))
     date = Column(DateTime)
     total_value = Column(Float)
+
+class AllInvestmentsHistory(Base):
+    """
+        All stock/noble metal investments history value.
+    """
+
+    __tablename__ = "all_investments_history"
+
+    history_id = Column(Integer, primary_key=True)
+    date = Column(DateTime)
+    total_value = Column(Float)
