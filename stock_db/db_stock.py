@@ -2,7 +2,7 @@ import logging
 
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import ForeignKey
-from sqlalchemy import Column, Integer, String, Float, DateTime
+from sqlalchemy import Column, Integer, String, Float, DateTime, Boolean
 from sqlalchemy.orm import make_transient
 from sqlalchemy.orm import relationship
 from sqlalchemy import asc
@@ -756,6 +756,19 @@ class StockPriceRangeTable:
         session.close()
 
         return
+
+class StockLowestUnit(Base):
+    """
+    Lowest unit in stock transaction
+    """
+
+    __tablename__ = "stock_lowest_unit"
+
+    symbol = Column(String(20),
+                    ForeignKey("stock_info.symbol"),
+                    primary_key=True)
+    lowest_unit = Column(Float)
+    is_integer = Column(Boolean)
 
 class StockCashTotalHistoryValue(Base):
     """
