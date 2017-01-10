@@ -94,7 +94,10 @@ def main():
     for stock_info in stock_infos:
         symbol = stock_info.symbol
         total_amount = update_total_history(symbol, session)
-        total += total_amount
+        if "美元" in symbol:
+            continue
+        else:
+            total += total_amount
 
     all_investments_history = AllInvestmentsHistory(
         date=datetime.utcnow(),
