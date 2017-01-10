@@ -770,6 +770,31 @@ class StockLowestUnit(Base):
     lowest_unit = Column(Float)
     is_integer = Column(Boolean)
 
+class StockLowestUnitTable:
+    """
+    Lowest Unit table
+    """
+
+    def __init__(self, conn = None):
+        if (conn is None):
+            conn = get_default_db_connection()
+        self.logger = logging.getLogger(__name__ + ".StockLowestUnitTable")
+        self.conn = conn
+        return
+
+    def get_lowest_unit(self, stock_symbol):
+        Session = self.conn.get_sessionmake()
+
+        session = Session()
+
+        stock_lowest_unit = session.query(StockLowestUnit).\
+                            filter(StockLowestUnit.symbol == stock_symbol).\
+                            scalar()
+        if stock_lowest_unit is not None:
+            make_transient(stock_lowest_unit)
+        session.close()
+        return stock_lowest_unit
+
 class StockCashTotalHistoryValue(Base):
     """
         Total stock and cash value every day

@@ -110,9 +110,9 @@ class SimpleAlgorithm:
     def calculate(self):
         print("expected percentage: {0}".\
               format(self.get_expected_percentage()))
-        expected_quantity = int(self.get_expected_percentage() *
-                                self.get_total_value() / 100 / \
-                                self.current_price)
+        expected_quantity = self.get_expected_percentage() * \
+                            self.get_total_value() / 100 / \
+                            self.current_price
         owned_quantity = StockTransaction.get_owned_quantity(self.symbol)
         print("expected quantity: \t{0}".format(expected_quantity))
         print("owned quantity: \t{0}".format(owned_quantity))
